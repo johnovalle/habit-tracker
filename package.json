@@ -4,8 +4,8 @@
   "description": "Full-stack Node, SQL, React app for tracking habits",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node --presets env server/index",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server/index.js --exec babel-node",
+    "test": "mocha buildScripts/testSetup \"src/**/*.test.js\""
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/kugyousha/habit-tracker#readme",
   "dependencies": {
+    "ejs": "^2.5.7",
     "express": "^4.16.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
@@ -28,6 +29,16 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
-    "webpack": "^3.10.0"
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "chai": "^4.1.2",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "html-webpack-plugin": "^2.30.1",
+    "jsdom": "9.11.0",
+    "mocha": "^4.1.0",
+    "nodemon": "^1.14.6",
+    "webpack": "^3.10.0",
+    "webpack-dev-middleware": "^2.0.3"
   }
 }
