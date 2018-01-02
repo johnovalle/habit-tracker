@@ -11,7 +11,7 @@ const compiler = webpack(config);
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.user(bodyParser.urlencoded({ extended: false}));
+app.use(bodyParser.urlencoded({ extended: false}));
 
 app.use(require('webpack-dev-middleware')(compiler, {
   noInfo: true,
@@ -20,6 +20,7 @@ app.use(require('webpack-dev-middleware')(compiler, {
 
 app.set('view engine', 'ejs');
 
+require('./routes')(app);
 app.get('/', (req, res) => {
   res.render(path.join(__dirname, '../src/index'));
 });
