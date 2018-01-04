@@ -1,4 +1,5 @@
 const HabitGroup = require('../models').HabitGroup;
+const Habit = require('../models').Habit;
 
 module.exports = {
   create(req, res) {
@@ -11,7 +12,16 @@ module.exports = {
   },
   list(req, res) {
     return HabitGroup
-      .all({attributes: ['id', 'title', 'createdAt', 'updatedAt']}) //for some reason by default it looks to a column 'allowNull' which does not exist
+      .findAll({
+        attributes: ['id', 'title', 'createdAt', 'updatedAt'],
+        include: [{
+          model: Habit,
+          as: 'Habits',
+          attributes: ['id', 'title'],
+          foreignKey: 'habitGroupId',
+        }],
+      })
+      //.all({attributes: ['id', 'title', 'createdAt', 'updatedAt']}) //for some reason by default it looks to a column 'allowNull' which does not exist
       .then(habitGroups => res.status(200).send(habitGroups))
       .catch(error => res.status(400).send(error));
   }
