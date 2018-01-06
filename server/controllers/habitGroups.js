@@ -16,9 +16,8 @@ module.exports = {
         attributes: ['id', 'title', 'createdAt', 'updatedAt'],
         include: [{
           model: Habit,
-          as: 'Habits',
+          as: 'habits',
           attributes: ['id', 'title'],
-          foreignKey: 'habitGroupId',
         }],
       })
       //.all({attributes: ['id', 'title', 'createdAt', 'updatedAt']}) //for some reason by default it looks to a column 'allowNull' which does not exist

@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
 
   HabitGroup.associate = (models) => {
     HabitGroup.hasMany(models.Habit, {
-      foreignKey: 'habitId',
+      foreignKey: 'habitGroupId',
       as: 'habits'
     });
   };
