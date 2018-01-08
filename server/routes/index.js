@@ -9,6 +9,9 @@ module.exports = (app) => {
 
   app.post('/api/habitgroups', habitGroupsController.create);
   app.get('/api/habitgroups', habitGroupsController.list);
+  app.get('/api/habitgroups/:habitGroupId', habitGroupsController.retrieve);
+  app.put('/api/habitgroups/:habitGroupId', habitGroupsController.update);
+  app.delete('/api/habitgroups/:habitGroupId', habitGroupsController.destroy);
 
   app.post('/api/habitgroups/:habitGroupId/habits', habitsController.create);
 }
