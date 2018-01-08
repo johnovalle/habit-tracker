@@ -14,4 +14,11 @@ module.exports = (app) => {
   app.delete('/api/habitgroups/:habitGroupId', habitGroupsController.destroy);
 
   app.post('/api/habitgroups/:habitGroupId/habits', habitsController.create);
+  app.put('/api/habitgroups/:habitGroupId/habits/:habitId', habitsController.update);
+  app.delete('/api/habitgroups/:habitGroupId/habits/:habitId', habitsController.destroy);
+
+  app.all('/api/habitgroups/:habitGroupId/habits', (req, res) =>
+    res.status(405).send({
+      message: 'Method Not Allowed',
+  }));
 }
