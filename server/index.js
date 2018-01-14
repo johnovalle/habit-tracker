@@ -4,6 +4,22 @@ import config from '../webpack.config';
 import path from 'path';
 import logger from 'morgan';
 import bodyParser from 'body-parser';
+import knexBase from 'knex';
+
+let dbConfig = {
+  client: 'sqlite3',
+  connection: {
+    filename: '../habit.sqlite'
+  }
+}
+
+const knex = knexBase(dbConfig);
+knex.select('id', 'title').from('habits').asCallback((err, rows) => {
+  if (err) { console.log(err); }
+  else {
+    console.log(rows);
+  }
+});
 
 const port = 3000;
 const app = express();
@@ -20,7 +36,7 @@ app.use(require('webpack-dev-middleware')(compiler, {
 
 app.set('view engine', 'ejs');
 
-require('./routes')(app);
+//require('./routes')(app);
 app.get('/', (req, res) => {
   res.render(path.join(__dirname, '../src/index'));
 });
