@@ -9,12 +9,12 @@ import knexBase from 'knex';
 let dbConfig = {
   client: 'sqlite3',
   connection: {
-    filename: '../habit.sqlite'
+    filename: path.join(__dirname, '../habit.sqlite')
   }
 }
 
 const knex = knexBase(dbConfig);
-knex.select('id', 'title').from('habits').asCallback((err, rows) => {
+knex.select('id', 'title').from("habits").timeout(1000).asCallback((err, rows) => {
   if (err) { console.log(err); }
   else {
     console.log(rows);
