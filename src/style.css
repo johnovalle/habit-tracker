@@ -5,3 +5,7 @@
   border: 1px solid black;
   background-color: aliceblue;
 }
+
+.filled {
+  background-color: darkred;
+}

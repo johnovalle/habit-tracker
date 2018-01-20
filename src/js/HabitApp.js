@@ -9,7 +9,7 @@ export default class HabitApp extends React.Component {
     //console.log(this.state.groups);
   }
   sortHabits(data){
-    let habits = this.groupItemByContainer(data.habits, "entires", data.entires, "habitId");
+    let habits = this.groupItemByContainer(data.habits, "entries", data.entries, "habitId");
 
     data.groups.push({id: null, habits: []});
     let groups = this.groupItemByContainer(data.groups, "habits", habits, "groupId");
