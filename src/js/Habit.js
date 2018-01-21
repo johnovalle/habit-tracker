@@ -18,7 +18,7 @@ const Habit = (props) => {
     }
     return track.reverse();
   }
-
+  //move these methods to utility
   const sameDay = (d1, d2) => {
     return d1.getFullYear() === d2.getFullYear() &&
       d1.getMonth() === d2.getMonth() &&
@@ -34,6 +34,7 @@ const Habit = (props) => {
     var diff = Math.abs(d1.getTime() - d2.getTime());
     return diff / (1000 * 60 * 60 * 24);
   };
+  // make track a component
   return(
     <div>
       {props.title}
