@@ -1,95 +1,53 @@
 import React from 'react';
 import HabitGroup from './HabitGroup';
 import Habit from './Habit';
-import data from './temp-data';
+import {sameDay, numDaysBetween} from './dateUtils';
+
 export default class HabitApp extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      groups: this.sortHabits(data),
+      ...props.data,
+      groups: [{id: null, title: 'Ungrouped'}, ...props.data.groups],
       tempId: 999,
     };
-
-    //console.log(this.state.groups);
-  }
-
-  sortHabits(data){
-    let habits = this.groupItemByContainer(data.habits, "entries", data.entries, "habitId");
-
-    data.groups.push({id: null, habits: []});
-    let groups = this.groupItemByContainer(data.groups, "habits", habits, "groupId");
-
-    return groups;
-  }
-
-  groupItemByContainer(containers, type, items, fKey) {
-    let containerMap = {};
-    for(let i = 0; i < containers.length; i++) {
-      containerMap[containers[i].id] = containers[i];
-    }
-
-    for(let i = 0; i < items.length; i++) {
-      containerMap[items[i][fKey]][type].push(items[i]);
-    }
-    return containers;
+    console.log(this.state);
   }
 
   buildGroups(groups) {
     return groups.map((group) => {
-      //console.log(group.habits);
       return (
-      <HabitGroup key={group.id} title={group.title || 'none'}>
-        {this.buildHabits(group.habits)}
-      </HabitGroup>
-    )
-    });
-  }
-
-  addEntryToHabit(habit, date) {
-    let targetGroup, targetHabit; //theres gotta be better way to do this
-
-    for (let i = 0; i < this.state.groups.length; i++) {
-      if (this.state.groups[i].id === habit.groupId) {
-        targetGroup = this.state.groups[i];
-        break;
-      }
-    }
-
-    for (let i = 0; i < targetGroup.habits.length; i++) {
-      if (targetGroup.habits.id === habit.id) {
-        targetHabit = targetGroup.habits[i];
-        break;
-      }
-    }
-    targetHabit.entries = targetHabit.entries.concat([{id: this.state.tempId, habitId: targetHabit.id, date: new Date(date)},])
-    //targetGroup.
-    // this.setState(prevState => ({
-    //   ...prevState,
-    //   groups: prevState.groups.map()
-    // }));
-  }
-
-  buildHabits(habits) {
-    console.log(habits);
-    return habits.map((habit) => {
-      return (
-        <Habit key={habit.id} title={habit.title} entries={habit.entries}>
-          {this.buildTrack(habit.entries)}
-        </Habit>
+        <HabitGroup key={group.id} {...group}>
+          {this.buildHabits(group.id, this.state.habits)}
+        </HabitGroup>
       );
     });
   }
 
-  buildTrack(entries) {
+  buildHabits(groupId, habits) {
+    // {this.buildTrack(habit.entries)}
+    return habits.map((habit) => {
+      if(groupId === habit.groupId) {
+        return (
+          <Habit key={habit.id} {...habit}>
+            {this.buildTrack(habit.id, this.state.entries, 31)}
+          </Habit>
+        );
+      }
+    });
+  }
+
+  buildTrack(habitId, entries, range) {
     let track = [];
-    let recentEntries = this.sortAndFilterEntries(entries);
+    let habitEntries = entries.filter(entry => habitId === entry.habitId);
+    let recentEntries = this.sortAndFilterEntries(habitEntries, range);
     console.log(recentEntries);
-    for (let i = 0; i < 31; i++) {
+    for (let i = 0; i < range; i++) {
       let d = new Date();
       d.setDate(d.getDate() - i);
       let status = 'unfilled';
-      if(recentEntries.length > 0 && this.sameDay(d, recentEntries[0].date)) {
+      if(recentEntries.length > 0 && sameDay(d, recentEntries[0].date)) {
         recentEntries.shift();
         status = 'filled';
       }
@@ -98,26 +56,40 @@ export default class HabitApp extends React.Component {
     }
     return track.reverse();
   }
-  //move these methods to utility
-  sameDay(d1, d2) {
-    return d1.getFullYear() === d2.getFullYear() &&
-      d1.getMonth() === d2.getMonth() &&
-      d1.getDate() === d2.getDate();
-  };
 
-  sortAndFilterEntries(entries) {
+  sortAndFilterEntries(entries, range) {
     let d = new Date();
-    return entries.filter(entry => this.numDaysBetween(d, entry.date) < 31).sort((a,b) => a.date < b.date);
+    return entries.filter(entry => numDaysBetween(d, entry.date) < range).sort((a,b) => a.date < b.date);
   }
 
-  numDaysBetween(d1, d2) {
-    var diff = Math.abs(d1.getTime() - d2.getTime());
-    return diff / (1000 * 60 * 60 * 24);
-  }
+  // addEntryToHabit(habit, date) {
+  //   let targetGroup, targetHabit; //theres gotta be better way to do this
+
+  //   for (let i = 0; i < this.state.groups.length; i++) {
+  //     if (this.state.groups[i].id === habit.groupId) {
+  //       targetGroup = this.state.groups[i];
+  //       break;
+  //     }
+  //   }
+
+  //   for (let i = 0; i < targetGroup.habits.length; i++) {
+  //     if (targetGroup.habits.id === habit.id) {
+  //       targetHabit = targetGroup.habits[i];
+  //       break;
+  //     }
+  //   }
+  //   targetHabit.entries = targetHabit.entries.concat([{id: this.state.tempId, habitId: targetHabit.id, date: new Date(date)},])
+  //   //targetGroup.
+  //   // this.setState(prevState => ({
+  //   //   ...prevState,
+  //   //   groups: prevState.groups.map()
+  //   // }));
+  // }
 
   render() {
     return (
       <div>
+        <h1>Habit tracker</h1>
         {this.buildGroups(this.state.groups)}
       </div>
     );
