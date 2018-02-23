@@ -1,5 +1,6 @@
 import React from 'react';
 import HabitGroup from './HabitGroup';
+import Habit from './Habit';
 import data from './temp-data';
 export default class HabitApp extends React.Component {
 
@@ -37,7 +38,11 @@ export default class HabitApp extends React.Component {
   buildGroups(groups) {
     return groups.map((group) => {
       //console.log(group.habits);
-      return <HabitGroup key={group.id} title={group.title || 'none'} habits={group.habits} />
+      return (
+      <HabitGroup key={group.id} title={group.title || 'none'}>
+        {this.buildHabits(group.habits)}
+      </HabitGroup>
+    )
     });
   }
 
@@ -65,10 +70,54 @@ export default class HabitApp extends React.Component {
     // }));
   }
 
+  buildHabits(habits) {
+    console.log(habits);
+    return habits.map((habit) => {
+      return (
+        <Habit key={habit.id} title={habit.title} entries={habit.entries}>
+          {this.buildTrack(habit.entries)}
+        </Habit>
+      );
+    });
+  }
+
+  buildTrack(entries) {
+    let track = [];
+    let recentEntries = this.sortAndFilterEntries(entries);
+    console.log(recentEntries);
+    for (let i = 0; i < 31; i++) {
+      let d = new Date();
+      d.setDate(d.getDate() - i);
+      let status = 'unfilled';
+      if(recentEntries.length > 0 && this.sameDay(d, recentEntries[0].date)) {
+        recentEntries.shift();
+        status = 'filled';
+      }
+      status += ' entry-block';
+      track.push(<span key={d.getDate()} className={status}></span>); //build entry component
+    }
+    return track.reverse();
+  }
+  //move these methods to utility
+  sameDay(d1, d2) {
+    return d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
+  };
+
+  sortAndFilterEntries(entries) {
+    let d = new Date();
+    return entries.filter(entry => this.numDaysBetween(d, entry.date) < 31).sort((a,b) => a.date < b.date);
+  }
+
+  numDaysBetween(d1, d2) {
+    var diff = Math.abs(d1.getTime() - d2.getTime());
+    return diff / (1000 * 60 * 60 * 24);
+  }
+
   render() {
     return (
       <div>
-        <h1>React up and running</h1>
         {this.buildGroups(this.state.groups)}
       </div>
     );
