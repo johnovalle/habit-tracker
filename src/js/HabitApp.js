@@ -13,7 +13,6 @@ export default class HabitApp extends React.Component {
       groups: [{id: null, title: 'Ungrouped'}, ...props.data.groups],
       tempId: 999,
     };
-    console.log(this.state);
   }
 
   buildGroups(groups) {
@@ -27,7 +26,6 @@ export default class HabitApp extends React.Component {
   }
 
   buildHabits(groupId, habits) {
-    // {this.buildTrack(habit.entries)}
     return habits.map((habit) => {
       if(groupId === habit.groupId) {
         return (
@@ -43,7 +41,7 @@ export default class HabitApp extends React.Component {
     let track = [];
     let habitEntries = entries.filter(entry => habitId === entry.habitId);
     let recentEntries = this.sortAndFilterEntries(habitEntries, range);
-    console.log(recentEntries);
+    // console.log(recentEntries);
     for (let i = 0; i < range; i++) {
       let d = new Date();
       d.setDate(d.getDate() - i);
@@ -65,7 +63,6 @@ export default class HabitApp extends React.Component {
   }
 
   toggleEntryToHabit(habitId, date, prevEntry) {
-    // {id: 1, habitId: 1, date: new Date("February 13, 2018 11:13:00")},
     console.log('toggleEntry', habitId, date, prevEntry);
     if (!prevEntry) {
       let entry = {id: this.state.tempId, habitId, date};
@@ -75,30 +72,6 @@ export default class HabitApp extends React.Component {
       this.setState({...this.state, entries});
     }
   }
-
-  // addEntryToHabit(habit, date) {
-  //   let targetGroup, targetHabit; //theres gotta be better way to do this
-
-  //   for (let i = 0; i < this.state.groups.length; i++) {
-  //     if (this.state.groups[i].id === habit.groupId) {
-  //       targetGroup = this.state.groups[i];
-  //       break;
-  //     }
-  //   }
-
-  //   for (let i = 0; i < targetGroup.habits.length; i++) {
-  //     if (targetGroup.habits.id === habit.id) {
-  //       targetHabit = targetGroup.habits[i];
-  //       break;
-  //     }
-  //   }
-  //   targetHabit.entries = targetHabit.entries.concat([{id: this.state.tempId, habitId: targetHabit.id, date: new Date(date)},])
-  //   //targetGroup.
-  //   // this.setState(prevState => ({
-  //   //   ...prevState,
-  //   //   groups: prevState.groups.map()
-  //   // }));
-  // }
 
   render() {
     return (
