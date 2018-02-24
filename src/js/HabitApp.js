@@ -13,12 +13,14 @@ export default class HabitApp extends React.Component {
       groups: [{id: null, title: 'Ungrouped'}, ...props.data.groups],
       tempId: 999,
     };
+    this.retitle = this.retitle.bind(this);
+    this.toggleEntryToHabit = this.toggleEntryToHabit.bind(this);
   }
 
   buildGroups(groups) {
     return groups.map((group) => {
       return (
-        <HabitGroup key={group.id} {...group}>
+        <HabitGroup key={group.id} {...group} retitle={this.retitle}>
           {this.buildHabits(group.id, this.state.habits)}
         </HabitGroup>
       );
@@ -29,12 +31,22 @@ export default class HabitApp extends React.Component {
     return habits.map((habit) => {
       if(groupId === habit.groupId) {
         return (
-          <Habit key={habit.id} {...habit}>
+          <Habit key={habit.id} {...habit} retitle={this.retitle}>
             {this.buildTrack(habit.id, this.state.entries, 31)}
           </Habit>
         );
       }
     });
+  }
+
+  retitle(type, id, title) {
+    let newCollection = this.state[type].map(item => {
+      if(item.id === id) {
+        return {...item, title};
+      }
+      return item;
+    });
+    this.setState({...this.state, [type]: newCollection});
   }
 
   buildTrack(habitId, entries, range) {
@@ -52,7 +64,7 @@ export default class HabitApp extends React.Component {
         status = 'filled';
       }
       let statusClass = status + ' entry-block';
-      track.push(<HabitEntry key={d.getDate()} className={statusClass} onClick={() => this.toggleEntryToHabit(habitId, d, entry)}/>); //build entry component
+      track.push(<HabitEntry key={d.getDate()} className={statusClass} onClick={() => this.toggleEntryToHabit(habitId, d, entry)}/>);
     }
     return track.reverse();
   }
