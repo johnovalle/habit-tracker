@@ -5,6 +5,7 @@ const Habit = (props) => {
     <div>
       <span onClick={() => {props.retitle('habits', props.id, 'new habit')}}>{props.title}</span>
       {props.children}
+      <span onClick={() => {props.delete('habits', props.id, ['entries'])}}>X</span>
     </div>
   )
 }

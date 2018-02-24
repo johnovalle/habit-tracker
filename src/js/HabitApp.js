@@ -15,12 +15,13 @@ export default class HabitApp extends React.Component {
     };
     this.retitle = this.retitle.bind(this);
     this.toggleEntryToHabit = this.toggleEntryToHabit.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   buildGroups(groups) {
     return groups.map((group) => {
       return (
-        <HabitGroup key={group.id} {...group} retitle={this.retitle}>
+        <HabitGroup key={group.id} {...group} retitle={this.retitle} delete={this.delete}>
           {this.buildHabits(group.id, this.state.habits)}
         </HabitGroup>
       );
@@ -31,7 +32,7 @@ export default class HabitApp extends React.Component {
     return habits.map((habit) => {
       if(groupId === habit.groupId) {
         return (
-          <Habit key={habit.id} {...habit} retitle={this.retitle}>
+          <Habit key={habit.id} {...habit} retitle={this.retitle} delete={this.delete}>
             {this.buildTrack(habit.id, this.state.entries, 31)}
           </Habit>
         );
@@ -47,6 +48,38 @@ export default class HabitApp extends React.Component {
       return item;
     });
     this.setState({...this.state, [type]: newCollection});
+  }
+
+  delete(type, id, cascade) {
+    let newCollection = this.state[type].filter(item => item.id !== id);
+    let cascadeCollections = {};
+    let cascadeIds = {};
+    cascade.forEach((collectionType, index) => {
+      let newCollection;
+      if(index === 0) {
+        newCollection = this.state[collectionType].filter(item => {
+          if(item[type.slice(0, -1) + 'Id'] !== id) {
+            return true;
+          }
+          cascadeIds[collectionType] = cascadeIds[collectionType] || [];
+          cascadeIds[collectionType].push(item.id);
+          return false;
+        });
+      } else {
+        newCollection = this.state[collectionType].filter(item => {
+          if(cascadeIds[cascade[index - 1]].indexOf(item[cascade[index - 1].slice(0, -1) + 'Id']) === -1) {
+            return true;
+          }
+          cascadeIds[collectionType] = cascadeIds[collectionType] || [];
+          cascadeIds[collectionType].push(item.id);
+          return false;
+        });
+      }
+      cascadeCollections[collectionType] = newCollection;
+    });
+    this.setState({...this.state, [type]: newCollection, ...cascadeCollections}, () => {
+      console.log(this.state);
+    });
   }
 
   buildTrack(habitId, entries, range) {
