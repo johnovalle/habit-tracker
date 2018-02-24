@@ -1,6 +1,7 @@
 import React from 'react';
 import HabitGroup from './HabitGroup';
 import Habit from './Habit';
+import HabitEntry from './HabitEntry';
 import {sameDay, numDaysBetween} from './dateUtils';
 
 export default class HabitApp extends React.Component {
@@ -47,12 +48,13 @@ export default class HabitApp extends React.Component {
       let d = new Date();
       d.setDate(d.getDate() - i);
       let status = 'unfilled';
+      let entry;
       if(recentEntries.length > 0 && sameDay(d, recentEntries[0].date)) {
-        recentEntries.shift();
+        entry = recentEntries.shift();
         status = 'filled';
       }
-      status += ' entry-block';
-      track.push(<span key={d.getDate()} className={status}></span>); //build entry component
+      let statusClass = status + ' entry-block';
+      track.push(<HabitEntry key={d.getDate()} className={statusClass} onClick={() => this.toggleEntryToHabit(habitId, d, entry)}/>); //build entry component
     }
     return track.reverse();
   }
@@ -60,6 +62,18 @@ export default class HabitApp extends React.Component {
   sortAndFilterEntries(entries, range) {
     let d = new Date();
     return entries.filter(entry => numDaysBetween(d, entry.date) < range).sort((a,b) => a.date < b.date);
+  }
+
+  toggleEntryToHabit(habitId, date, prevEntry) {
+    // {id: 1, habitId: 1, date: new Date("February 13, 2018 11:13:00")},
+    console.log('toggleEntry', habitId, date, prevEntry);
+    if (!prevEntry) {
+      let entry = {id: this.state.tempId, habitId, date};
+      this.setState({...this.state, entries: [...this.state.entries, entry], tempId: this.state.tempId + 1});
+    } else {
+      let entries = this.state.entries.filter(entry => prevEntry.id !== entry.id);
+      this.setState({...this.state, entries});
+    }
   }
 
   // addEntryToHabit(habit, date) {
