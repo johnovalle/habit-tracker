@@ -2,6 +2,7 @@ import React from 'react';
 import HabitGroup from './HabitGroup';
 import Habit from './Habit';
 import HabitEntry from './HabitEntry';
+import AddForm from './AddForm';
 import {sameDay, numDaysBetween} from './dateUtils';
 
 export default class HabitApp extends React.Component {
@@ -16,6 +17,7 @@ export default class HabitApp extends React.Component {
     this.retitle = this.retitle.bind(this);
     this.toggleEntryToHabit = this.toggleEntryToHabit.bind(this);
     this.delete = this.delete.bind(this);
+    this.addToCollection = this.addToCollection.bind(this);
   }
 
   buildGroups(groups) {
@@ -47,7 +49,7 @@ export default class HabitApp extends React.Component {
       }
       return item;
     });
-    this.setState({...this.state, [type]: newCollection});
+    this.setState({[type]: newCollection});
   }
 
   delete(type, id, cascade) {
@@ -67,7 +69,11 @@ export default class HabitApp extends React.Component {
         });
       } else {
         newCollection = this.state[collectionType].filter(item => {
-          if(cascadeIds[cascade[index - 1]].indexOf(item[cascade[index - 1].slice(0, -1) + 'Id']) === -1) {
+          if(cascadeIds[cascade[index - 1]]) {
+            if(cascadeIds[cascade[index - 1]].indexOf(item[cascade[index - 1].slice(0, -1) + 'Id']) === -1) {
+              return true;
+            }
+          } else {
             return true;
           }
           cascadeIds[collectionType] = cascadeIds[collectionType] || [];
@@ -77,7 +83,7 @@ export default class HabitApp extends React.Component {
       }
       cascadeCollections[collectionType] = newCollection;
     });
-    this.setState({...this.state, [type]: newCollection, ...cascadeCollections}, () => {
+    this.setState({[type]: newCollection, ...cascadeCollections}, () => {
       console.log(this.state);
     });
   }
@@ -108,14 +114,28 @@ export default class HabitApp extends React.Component {
   }
 
   toggleEntryToHabit(habitId, date, prevEntry) {
-    console.log('toggleEntry', habitId, date, prevEntry);
     if (!prevEntry) {
       let entry = {id: this.state.tempId, habitId, date};
-      this.setState({...this.state, entries: [...this.state.entries, entry], tempId: this.state.tempId + 1});
+      this.setState({entries: [...this.state.entries, entry], tempId: this.state.tempId + 1});
     } else {
       let entries = this.state.entries.filter(entry => prevEntry.id !== entry.id);
-      this.setState({...this.state, entries});
+      this.setState({entries});
     }
+  }
+
+  addToCollection(type, targetKey = null, targetId = null, title, callback) {
+    let newItem;
+    if(targetKey) {
+      newItem = {id: this.state.tempId, title, [targetKey]: parseInt(targetId)};
+    } else {
+      newItem = {id: this.state.tempId, title};
+    }
+    
+    let newCollection = [...this.state[type], newItem];
+    this.setState({[type]: newCollection, tempId: this.state.tempId + 1}, () => {
+      console.log('state:', this.state);
+    });
+    callback();
   }
 
   render() {
@@ -123,6 +143,17 @@ export default class HabitApp extends React.Component {
       <div>
         <h1>Habit tracker</h1>
         {this.buildGroups(this.state.groups)}
+        <AddForm 
+          type='groups' 
+          title='Add a new group'
+          action={this.addToCollection}
+           />
+        <AddForm
+          type='habits'
+          title='Add a new habit'
+          targetKey='groupId'
+          targetId='1'
+          action={this.addToCollection} />
       </div>
     );
   }
