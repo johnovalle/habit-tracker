@@ -13,6 +13,8 @@ export default class HabitApp extends React.Component {
       ...props.data,
       groups: [{id: null, title: 'Ungrouped'}, ...props.data.groups],
       tempId: 999,
+      groupOrderMap: {},
+      habitOrderMap: {},
     };
     this.retitle = this.retitle.bind(this);
     this.toggleEntryToHabit = this.toggleEntryToHabit.bind(this);
@@ -138,6 +140,19 @@ export default class HabitApp extends React.Component {
     callback();
   }
 
+  orderAndMapHabits() {
+    let sorted = [...this.state.habits].sort((a,b) => a - b);
+    let habitOrderMap = {};
+    sorted.forEach(habit => {
+      habitOrderMap[habit.groupId] = habitOrderMap[habit.groupId] || [];
+      habitOrderMap[habit.groupId].push(habit.id);
+    });
+    this.setState({habits: sorted, habitOrderMap});
+  }
+
+  // change order
+  // move habit from group to group
+
   render() {
     return (
       <div>
@@ -147,13 +162,14 @@ export default class HabitApp extends React.Component {
           type='groups' 
           title='Add a new group'
           action={this.addToCollection}
-           />
+        />
         <AddForm
           type='habits'
           title='Add a new habit'
           targetKey='groupId'
           targetId='1'
-          action={this.addToCollection} />
+          action={this.addToCollection}
+        />
       </div>
     );
   }
