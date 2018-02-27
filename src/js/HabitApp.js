@@ -139,14 +139,16 @@ export default class HabitApp extends React.Component {
   addToCollection(type, targetKey = null, targetId = null, title, callback) {
     let newItem;
     if(targetKey) {
-      newItem = {id: this.state.tempId, title, [targetKey]: parseInt(targetId)};
+      let order = this.state[type].filter(item => item[targetKey] === parseInt(targetId)).length;
+      newItem = {id: this.state.tempId, title, [targetKey]: parseInt(targetId), order};
     } else {
-      newItem = {id: this.state.tempId, title};
+      newItem = {id: this.state.tempId, title, order: this.state[type].length};
     }
     
     let newCollection = [...this.state[type], newItem];
     this.setState({[type]: newCollection, tempId: this.state.tempId + 1}, () => {
       console.log('state:', this.state);
+      this.orderAndMapHabits();
     });
     callback();
   }
@@ -164,36 +166,43 @@ export default class HabitApp extends React.Component {
   }
 
   changeHabitOrder(habitId, groupId, direction) { //need to add order when adding habit
+    
     let groupOrder = this.state.habitOrderMap[groupId];
     let currentLocation = groupOrder.indexOf(habitId);
     let swap;
     let newOrder = [...groupOrder];
     let dirModifier = 1;
+    let swapped = false;
+    console.log(habitId, groupId, direction, currentLocation);
 
     if (direction === 'asc' && currentLocation !== 0) {
       swap = groupOrder[currentLocation - 1];
       newOrder[currentLocation - 1] = groupOrder[currentLocation];
       newOrder[currentLocation] = swap;
+      swapped = true;
     } else if (direction === 'desc' && currentLocation !== groupOrder.length - 1) {
       swap = groupOrder[currentLocation + 1];
       newOrder[currentLocation + 1] = groupOrder[currentLocation];
       newOrder[currentLocation] = swap;
       dirModifier *= -1;
+      swapped = true;
     }
-
-    let newHabits = this.state.habits.map(habit => {
-      if (habit.id === swap) {
-        return {...habit, order: (habit.order + dirModifier) }
-      }
-      if (habit.id === habitId) {
-        return {...habit, order: (habit.order + (dirModifier * -1)) }
-      }
-      return habit;
-    });
-    this.setState({habitOrderMap: {...this.state.habitOrderMap, [groupId]: newOrder },
-                  habits: newHabits}, () => {
-                    this.orderAndMapHabits();
-                  });
+    if (swapped) {
+      let newHabits = this.state.habits.map(habit => {
+        if (habit.id === swap) {
+          return {...habit, order: (habit.order + dirModifier) }
+        }
+        if (habit.id === habitId) {
+          return {...habit, order: (habit.order + (dirModifier * -1)) }
+        }
+        return habit;
+      });
+      this.setState({habitOrderMap: {...this.state.habitOrderMap, [groupId]: newOrder },
+                    habits: newHabits}, () => {
+                      this.orderAndMapHabits();
+                    });
+    }
+    
   }
   // change order
   // move habit from group to group
