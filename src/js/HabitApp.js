@@ -204,13 +204,12 @@ export default class HabitApp extends React.Component {
     }
     
   }
-  // change order
   // move habit from group to group
 
   render() {
     return (
-      <div>
-        <h1>Habit tracker</h1>
+      <div className="content">
+        <h1 className="app-title">Habit Tracker</h1>
         {this.buildGroups(this.state.groups)}
         <AddForm 
           type='groups' 

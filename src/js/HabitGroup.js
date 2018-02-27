@@ -2,13 +2,16 @@ import React from 'react';
 
 const HabitGroup = (props) => {
   return(
-    <div>
+    <div className="group">
       {props.id ? ( 
-      <div>
-        <div onClick={() => {props.retitle('groups', props.id, 'new group')}}>{props.title}</div>
-        <span onClick={() => {props.delete('groups', props.id, ['habits', 'entries'])}}>X</span>
+      <div  className="group-heading">
+        <span className="group-title" 
+              onClick={() => {props.retitle('groups', props.id, 'new group')}}>
+              {props.title}
+        </span>
+        <span  className="delete-button" onClick={() => {props.delete('groups', props.id, ['habits', 'entries'])}}>X</span>
       </div>
-        ) : <div>{props.title}</div>
+        ) : <div  className="group-heading"><span className="group-title">{props.title}</span></div>
       }
       
       {props.children}
