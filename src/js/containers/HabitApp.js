@@ -1,9 +1,9 @@
 import React from 'react';
-import HabitGroup from './HabitGroup';
-import Habit from './Habit';
-import HabitEntry from './HabitEntry';
+import HabitGroup from '../components/HabitGroup';
+import Habit from '../components/Habit';
+import HabitEntry from '../components/HabitEntry';
 import AddForm from './AddForm';
-import {sameDay, numDaysBetween} from './dateUtils';
+import {sameDay, numDaysBetween} from '../dateUtils';
 
 export default class HabitApp extends React.Component {
 
