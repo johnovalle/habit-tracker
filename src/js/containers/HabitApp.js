@@ -116,7 +116,7 @@ export default class HabitApp extends React.Component {
         status = 'filled';
       }
       let statusClass = status + ' entry-block';
-      track.push(<HabitEntry key={d.getDate()} className={statusClass} onClick={() => this.toggleEntryToHabit(habitId, d, entry)}/>);
+      track.push(<HabitEntry key={d.toLocaleDateString('en-US')+habitId} className={statusClass} onClick={() => this.toggleEntryToHabit(habitId, d, entry)}/>);
     }
     return track.reverse();
   }
