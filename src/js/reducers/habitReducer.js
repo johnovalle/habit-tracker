@@ -1,5 +1,5 @@
 import {SET_HABITS, ADD_HABIT, EDIT_HABIT, DELETE_HABIT} from '../actions/actionsTypes';
-const habitState = {entries = []};
+const habitState = {habits: []};
 
 const habitReducer = ((state = habitState, action) => {
     switch (action.type) {

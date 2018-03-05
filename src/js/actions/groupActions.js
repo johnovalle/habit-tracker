@@ -1,6 +1,7 @@
 import {SET_GROUPS, ADD_GROUP, EDIT_GROUP, DELETE_GROUP} from './actionsTypes';
 
-export const setGroups = (groups) => { 
+export const setGroups = (groups) => {
+    console.log('setGroups ACTION');
     return {
         type: SET_GROUPS,
         payload: groups

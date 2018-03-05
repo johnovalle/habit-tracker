@@ -1,11 +1,15 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import HabitGroup from '../components/HabitGroup';
 import Habit from '../components/Habit';
 import HabitEntry from '../components/HabitEntry';
 import AddForm from './AddForm';
 import {sameDay, numDaysBetween} from '../dateUtils';
+import {setGroups} from '../actions/groupActions';
+import {setHabits} from '../actions/habitActions';
+import {setEntries} from '../actions/entryActions';
 
-export default class HabitApp extends React.Component {
+class HabitApp extends React.Component {
 
   constructor(props) {
     super(props);
@@ -25,6 +29,8 @@ export default class HabitApp extends React.Component {
   }
 
   componentDidMount() {
+    // this.props.setName(name)
+    this.props.setState();
     this.orderAndMapHabits();
     // console.log(this.state);
   }
@@ -227,3 +233,24 @@ export default class HabitApp extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    groups: state.groups,
+    habits: state.habits,
+    entries: state.entries,
+  }
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setState() {
+      console.log("Setting up app");
+      dispatch(setGroups());
+      dispatch(setHabits());
+      dispatch(setEntries());
+    },
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HabitApp);
