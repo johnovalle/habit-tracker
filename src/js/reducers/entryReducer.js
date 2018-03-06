@@ -1,9 +1,10 @@
-import {SET_ENTIRES, ADD_ENTRY, DELETE_ENTRY} from '../actions/actionsTypes';
+import {SET_ENTRIES, ADD_ENTRY, DELETE_ENTRY} from '../actions/actionsTypes';
 const entryState = {entries: []};
 
 const entryReducer = ((state = entryState, action) => {
     switch (action.type) {
-        case SET_ENTIRES:
+        case SET_ENTRIES:
+            state = [...action.payload];
             break;
         case ADD_ENTRY:
             break;

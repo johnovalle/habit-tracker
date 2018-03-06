@@ -13,13 +13,13 @@ class HabitApp extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      ...props.data,
-      groups: [{id: null, title: 'Ungrouped'}, ...props.data.groups],
-      tempId: 999,
-      groupOrderMap: {},
-      habitOrderMap: {},
-    };
+    // this.state = {
+    //   ...props.data,
+    //   groups: [{id: null, title: 'Ungrouped'}, ...props.data.groups],
+    //   tempId: 999,
+    //   groupOrderMap: {},
+    //   habitOrderMap: {},
+    // };
 
     this.retitle = this.retitle.bind(this);
     this.toggleEntryToHabit = this.toggleEntryToHabit.bind(this);
@@ -30,31 +30,34 @@ class HabitApp extends React.Component {
 
   componentDidMount() {
     // this.props.setName(name)
-    this.props.setState();
-    this.orderAndMapHabits();
+    this.props.setState(this.props.data, () => { console.log(this.props) });
+
+    // this.orderAndMapHabits();
     // console.log(this.state);
   }
 
   buildGroups(groups) {
-    return groups.map((group) => {
-      return (
-        <HabitGroup key={group.id} {...group} retitle={this.retitle} delete={this.delete}>
-          {this.buildHabits(group.id, this.state.habits)}
-        </HabitGroup>
-      );
-    });
+    if(groups.length > 0) {
+      return groups.map((group) => {
+        return (
+          <HabitGroup key={group.id} {...group} retitle={this.retitle} delete={this.delete}>
+            {this.buildHabits(group.id, this.props.habits)}
+          </HabitGroup>
+        );
+      });
+    }
   }
 
   buildHabits(groupId, habits) {
-    return habits.map((habit) => {
+    return habits.map((habit) => { //move this map to groups method
       if(groupId === habit.groupId) {
         return (
           <Habit key={habit.id}
                  {...habit}
-                 retitle={this.retitle} 
+                 retitle={this.retitle}
                  delete={this.delete}
                  reorder={this.changeHabitOrder}>
-            {this.buildTrack(habit.id, this.state.entries, 31)}
+            {this.buildTrack(habit.id, this.props.entries, 31)}
           </Habit>
         );
       }
@@ -109,7 +112,7 @@ class HabitApp extends React.Component {
 
   buildTrack(habitId, entries, range) {
     let track = [];
-    let habitEntries = entries.filter(entry => habitId === entry.habitId);
+    let habitEntries = entries.filter(entry => habitId === entry.habitId); // move this habits
     let recentEntries = this.sortAndFilterEntries(habitEntries, range);
     // console.log(recentEntries);
     for (let i = 0; i < range; i++) {
@@ -150,7 +153,7 @@ class HabitApp extends React.Component {
     } else {
       newItem = {id: this.state.tempId, title, order: this.state[type].length};
     }
-    
+
     let newCollection = [...this.state[type], newItem];
     this.setState({[type]: newCollection, tempId: this.state.tempId + 1}, () => {
       console.log('state:', this.state);
@@ -172,7 +175,7 @@ class HabitApp extends React.Component {
   }
 
   changeHabitOrder(habitId, groupId, direction) { //need to add order when adding habit
-    
+
     let groupOrder = this.state.habitOrderMap[groupId];
     let currentLocation = groupOrder.indexOf(habitId);
     let swap;
@@ -208,17 +211,18 @@ class HabitApp extends React.Component {
                       this.orderAndMapHabits();
                     });
     }
-    
+
   }
   // move habit from group to group
 
   render() {
+    console.log(this.props.groups);
     return (
       <div className="content">
         <h1 className="app-title">Habit Tracker</h1>
-        {this.buildGroups(this.state.groups)}
-        <AddForm 
-          type='groups' 
+        {this.buildGroups(this.props.groups)}
+        <AddForm
+          type='groups'
           title='Add a new group'
           action={this.addToCollection}
         />
@@ -244,11 +248,12 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setState() {
-      console.log("Setting up app");
-      dispatch(setGroups());
-      dispatch(setHabits());
-      dispatch(setEntries());
+    setState({groups, habits, entries}, callback) {
+      console.log("Setting up app",groups, habits, entries);
+      dispatch(setGroups(groups));
+      dispatch(setHabits(habits));
+      dispatch(setEntries(entries));
+      callback();
     },
   }
 };

@@ -4,6 +4,7 @@ const habitState = {habits: []};
 const habitReducer = ((state = habitState, action) => {
     switch (action.type) {
         case SET_HABITS:
+          state = [...action.payload];
             break;
         case ADD_HABIT:
             break;
