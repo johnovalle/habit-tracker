@@ -5,8 +5,8 @@ import Habit from '../components/Habit';
 import HabitEntry from '../components/HabitEntry';
 import AddForm from './AddForm';
 import {sameDay, numDaysBetween} from '../dateUtils';
-import {setGroups} from '../actions/groupActions';
-import {setHabits} from '../actions/habitActions';
+import {setGroups, editGroup} from '../actions/groupActions';
+import {setHabits, editHabit} from '../actions/habitActions';
 import {setEntries} from '../actions/entryActions';
 
 class HabitApp extends React.Component {
@@ -21,7 +21,7 @@ class HabitApp extends React.Component {
     //   habitOrderMap: {},
     // };
 
-    this.retitle = this.retitle.bind(this);
+    // this.retitle = this.retitle.bind(this);
     this.toggleEntryToHabit = this.toggleEntryToHabit.bind(this);
     this.delete = this.delete.bind(this);
     this.addToCollection = this.addToCollection.bind(this);
@@ -40,7 +40,7 @@ class HabitApp extends React.Component {
     if(groups.length > 0) {
       return groups.map((group) => {
         return (
-          <HabitGroup key={group.id} {...group} retitle={this.retitle} delete={this.delete}>
+          <HabitGroup key={group.id} {...group} retitle={this.props.retitle} delete={this.delete}>
             {this.buildHabits(group.id, this.props.habits)}
           </HabitGroup>
         );
@@ -54,7 +54,7 @@ class HabitApp extends React.Component {
         return (
           <Habit key={habit.id}
                  {...habit}
-                 retitle={this.retitle}
+                 retitle={this.props.retitle}
                  delete={this.delete}
                  reorder={this.changeHabitOrder}>
             {this.buildTrack(habit.id, this.props.entries, 31)}
@@ -62,16 +62,6 @@ class HabitApp extends React.Component {
         );
       }
     });
-  }
-
-  retitle(type, id, title) {
-    let newCollection = this.state[type].map(item => {
-      if(item.id === id) {
-        return {...item, title};
-      }
-      return item;
-    });
-    this.setState({[type]: newCollection});
   }
 
   delete(type, id, cascade) {
@@ -255,6 +245,14 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(setEntries(entries));
       callback();
     },
+    retitle(type, id, title) {
+      const payload = {id, title};
+      if (type === 'groups') {
+        dispatch(editGroup(payload));
+      } else if (type === 'habits') {
+        dispatch(editHabit(payload))
+      }
+    }
   }
 };
 

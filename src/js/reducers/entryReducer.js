@@ -1,5 +1,5 @@
 import {SET_ENTRIES, ADD_ENTRY, DELETE_ENTRY} from '../actions/actionsTypes';
-const entryState = {entries: []};
+const entryState = [];
 
 const entryReducer = ((state = entryState, action) => {
     switch (action.type) {

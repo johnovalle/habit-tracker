@@ -1,5 +1,5 @@
 import {SET_HABITS, ADD_HABIT, EDIT_HABIT, DELETE_HABIT} from '../actions/actionsTypes';
-const habitState = {habits: []};
+const habitState = [];
 
 const habitReducer = ((state = habitState, action) => {
     switch (action.type) {
@@ -9,6 +9,12 @@ const habitReducer = ((state = habitState, action) => {
         case ADD_HABIT:
             break;
         case EDIT_HABIT:
+            state = state.map(item => {
+                if(item.id === action.payload.id) {                
+                    return Object.assign({}, item, action.payload); // {...item, ...action.playload};
+                }
+                return item;
+            });
             break;
         case DELETE_HABIT:
             break;
