@@ -37,15 +37,15 @@ class HabitApp extends React.Component {
   }
 
   buildGroups(groups) {
-    if(groups.length > 0) {
+    // if(groups.length > 0) {
       return groups.map((group) => {
         return (
           <HabitGroup key={group.id} {...group} retitle={this.props.retitle} delete={this.delete}>
-            {this.buildHabits(group.id, this.props.habits)}
+            {this.buildHabits(group.id, this.props.habits.items)}
           </HabitGroup>
         );
       });
-    }
+    //}
   }
 
   buildHabits(groupId, habits) {
@@ -210,7 +210,7 @@ class HabitApp extends React.Component {
     return (
       <div className="content">
         <h1 className="app-title">Habit Tracker</h1>
-        {this.buildGroups(this.props.groups)}
+        {this.buildGroups(this.props.groups.items)}
         <AddForm
           type='groups'
           title='Add a new group'
