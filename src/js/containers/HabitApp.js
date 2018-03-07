@@ -5,26 +5,16 @@ import Habit from '../components/Habit';
 import HabitEntry from '../components/HabitEntry';
 import AddForm from './AddForm';
 import {sameDay, numDaysBetween} from '../dateUtils';
-import {setGroups, editGroup} from '../actions/groupActions';
-import {setHabits, editHabit} from '../actions/habitActions';
+import {setGroups, editGroup, addGroup} from '../actions/groupActions';
+import {setHabits, editHabit, addHabit} from '../actions/habitActions';
 import {setEntries} from '../actions/entryActions';
 
 class HabitApp extends React.Component {
 
   constructor(props) {
     super(props);
-    // this.state = {
-    //   ...props.data,
-    //   groups: [{id: null, title: 'Ungrouped'}, ...props.data.groups],
-    //   tempId: 999,
-    //   groupOrderMap: {},
-    //   habitOrderMap: {},
-    // };
-
-    // this.retitle = this.retitle.bind(this);
     this.toggleEntryToHabit = this.toggleEntryToHabit.bind(this);
     this.delete = this.delete.bind(this);
-    this.addToCollection = this.addToCollection.bind(this);
     this.changeHabitOrder = this.changeHabitOrder.bind(this);
   }
 
@@ -39,7 +29,7 @@ class HabitApp extends React.Component {
   buildGroups(groups) {
     // if(groups.length > 0) {
       return groups.map((group) => {
-        return (
+        return ( // try bind here
           <HabitGroup key={group.id} {...group} retitle={this.props.retitle} delete={this.delete}>
             {this.buildHabits(group.id, this.props.habits.items)}
           </HabitGroup>
@@ -135,35 +125,6 @@ class HabitApp extends React.Component {
     }
   }
 
-  addToCollection(type, targetKey = null, targetId = null, title, callback) {
-    let newItem;
-    if(targetKey) {
-      let order = this.state[type].filter(item => item[targetKey] === parseInt(targetId)).length;
-      newItem = {id: this.state.tempId, title, [targetKey]: parseInt(targetId), order};
-    } else {
-      newItem = {id: this.state.tempId, title, order: this.state[type].length};
-    }
-
-    let newCollection = [...this.state[type], newItem];
-    this.setState({[type]: newCollection, tempId: this.state.tempId + 1}, () => {
-      console.log('state:', this.state);
-      this.orderAndMapHabits();
-    });
-    callback();
-  }
-
-  orderAndMapHabits() {
-    let sorted = [...this.state.habits].sort((a,b) => a.order - b.order);
-    let habitOrderMap = {};
-    sorted.forEach(habit => {
-      habitOrderMap[habit.groupId] = habitOrderMap[habit.groupId] || [];
-      habitOrderMap[habit.groupId].push(habit.id);
-    });
-    this.setState({habits: sorted, habitOrderMap}, () => {
-      console.log(this.state);
-    });
-  }
-
   changeHabitOrder(habitId, groupId, direction) { //need to add order when adding habit
 
     let groupOrder = this.state.habitOrderMap[groupId];
@@ -206,7 +167,6 @@ class HabitApp extends React.Component {
   // move habit from group to group
 
   render() {
-    console.log(this.props.groups);
     return (
       <div className="content">
         <h1 className="app-title">Habit Tracker</h1>
@@ -214,14 +174,14 @@ class HabitApp extends React.Component {
         <AddForm
           type='groups'
           title='Add a new group'
-          action={this.addToCollection}
+          action={this.props.addToCollection}
         />
         <AddForm
           type='habits'
           title='Add a new habit'
           targetKey='groupId'
           targetId='1'
-          action={this.addToCollection}
+          action={this.props.addToCollection}
         />
       </div>
     );
@@ -251,6 +211,14 @@ const mapDispatchToProps = (dispatch) => {
         dispatch(editGroup(payload));
       } else if (type === 'habits') {
         dispatch(editHabit(payload))
+      }
+    },
+    addToCollection(type, targetKey = null, targetId = null, title, callback) { //remove callback
+      const payload = {targetKey, targetId, title, callback};
+      if (type === 'groups') {
+        dispatch(addGroup(payload));
+      } else if (type === 'habits') {
+        dispatch(addHabit(payload))
       }
     }
   }
