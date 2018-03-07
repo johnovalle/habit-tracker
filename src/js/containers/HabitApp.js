@@ -44,7 +44,7 @@ class HabitApp extends React.Component {
           <Habit key={habit.id}
                  {...habit}
                  retitle={this.props.retitle}
-                 delete={this.props.deleteHabit}
+                 delete={() => this.props.deleteHabit(habit.id)}
                  reorder={this.props.changeHabitOrder}>
             {this.buildTrack(habit.id, this.props.entries, 31)}
           </Habit>
