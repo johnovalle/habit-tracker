@@ -1,4 +1,4 @@
-import {SET_HABITS, ADD_HABIT, EDIT_HABIT, DELETE_HABIT} from '../actions/actionsTypes';
+import {SET_HABITS, ADD_HABIT, EDIT_HABIT, CHANGE_HABIT_ORDER, DELETE_HABIT} from '../actions/actionsTypes';
 const habitState = {map: {}, items: [], tempId:44};
 
 const habitReducer = ((state = habitState, action) => {
@@ -21,6 +21,15 @@ const habitReducer = ((state = habitState, action) => {
             });
             state = {...state, items};
             break;
+        case CHANGE_HABIT_ORDER:
+            console.log('payload', action.payload);
+          let reordered = changeHabitOrder(state, action.payload);
+          if (reordered) {
+            sorted = orderAndMapHabits(reordered);
+            state = {...state, ...sorted};
+          }
+          
+            break;
         case DELETE_HABIT:
             break;
     }
@@ -38,7 +47,7 @@ const orderAndMapHabits = (items) => {
   return {items: sorted, map: habitOrderMap};
 };
 
-const addToCollection = (state, {targetKey = null, targetId = null, title, callback}) => {
+const addToCollection = (state, {targetKey = null, targetId = null, title}) => {
   let newItem;
   if(targetKey) {
     let order = state.items.filter(item => item[targetKey] === parseInt(targetId)).length;
@@ -48,11 +57,50 @@ const addToCollection = (state, {targetKey = null, targetId = null, title, callb
   }
 
   return [...state.items, newItem];
-  // this.setState({[type]: newCollection, tempId: this.state.tempId + 1}, () => {
-  //   console.log('state:', this.state);
-  //   this.orderAndMapHabits();
-  // });
-  callback();
 };
+
+const changeHabitOrder = (state, {habitId, groupId, direction}) => { //need to add order when adding habit
+  let groupOrder = state.map[groupId];
+  let currentLocation = groupOrder.indexOf(habitId);
+  let swap;
+  // let newOrder = [...groupOrder];
+  let dirModifier = 1;
+  let swapped = false;
+  console.log(habitId, groupId, direction, currentLocation);
+
+  if (direction === 'asc' && currentLocation !== 0) { // change direction from asc to -1
+    swap = groupOrder[currentLocation - 1];
+    // newOrder[currentLocation - 1] = groupOrder[currentLocation];
+    // newOrder[currentLocation] = swap;
+    swapped = true;
+  } else if (direction === 'desc' && currentLocation !== groupOrder.length - 1) {
+    swap = groupOrder[currentLocation + 1];
+    // newOrder[currentLocation + 1] = groupOrder[currentLocation];
+    // newOrder[currentLocation] = swap;
+    dirModifier *= -1;
+    swapped = true;
+  }
+  if (swapped) {
+    let newHabits = state.items.map(habit => {
+      if (habit.id === swap) {
+        return {...habit, order: (habit.order + dirModifier) }
+      }
+      if (habit.id === habitId) {
+        return {...habit, order: (habit.order + (dirModifier * -1)) }
+      }
+      return habit;
+    });
+
+    return newHabits;
+    // this.setState({habitOrderMap: {...this.state.habitOrderMap, [groupId]: newOrder },
+    //               habits: newHabits}, () => {
+    //                 this.orderAndMapHabits();
+    //               });
+  } 
+  return false;
+};
+// move habit from group to group
+
+
 
 export default habitReducer;

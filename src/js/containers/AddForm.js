@@ -18,9 +18,8 @@ export default class AddForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    this.props.action(this.props.type, this.props.targetKey, this.props.targetId, this.state.value, () => {
-      this.setState({value: ''});
-    });
+    this.props.action(this.props.type, this.props.targetKey, this.props.targetId, this.state.value);
+    this.setState({value: ''});
   }
 
 
