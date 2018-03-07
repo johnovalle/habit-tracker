@@ -11,7 +11,7 @@ const Habit = (props) => {
             onClick={() => {props.reorder(props.id, props.groupId, 'asc')}}>^</span>
       {props.children}
       <span className="delete-button" 
-            onClick={() => {props.delete('habits', props.id, ['entries'])}}>X</span>
+            onClick={() => {props.delete(props.id, ['entries'])}}>X</span>
     </div>
   )
 }

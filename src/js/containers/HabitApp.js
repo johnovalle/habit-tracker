@@ -6,7 +6,7 @@ import HabitEntry from '../components/HabitEntry';
 import AddForm from './AddForm';
 import {sameDay, numDaysBetween} from '../dateUtils';
 import {setGroups, editGroup, addGroup} from '../actions/groupActions';
-import {setHabits, editHabit, addHabit, changeHabitOrder} from '../actions/habitActions';
+import {setHabits, editHabit, addHabit, changeHabitOrder, deleteHabit} from '../actions/habitActions';
 import {setEntries} from '../actions/entryActions';
 
 class HabitApp extends React.Component {
@@ -14,7 +14,7 @@ class HabitApp extends React.Component {
   constructor(props) {
     super(props);
     this.toggleEntryToHabit = this.toggleEntryToHabit.bind(this);
-    this.delete = this.delete.bind(this);
+    // this.delete = this.delete.bind(this);
   }
 
   componentDidMount() {
@@ -29,7 +29,7 @@ class HabitApp extends React.Component {
     // if(groups.length > 0) {
       return groups.map((group) => {
         return ( // try bind here
-          <HabitGroup key={group.id} {...group} retitle={this.props.retitle} delete={this.delete}>
+          <HabitGroup key={group.id} {...group} retitle={this.props.retitle} /*delete={this.delete}*/>
             {this.buildHabits(group.id, this.props.habits.items)}
           </HabitGroup>
         );
@@ -44,7 +44,7 @@ class HabitApp extends React.Component {
           <Habit key={habit.id}
                  {...habit}
                  retitle={this.props.retitle}
-                 delete={this.delete}
+                 delete={this.props.deleteHabit}
                  reorder={this.props.changeHabitOrder}>
             {this.buildTrack(habit.id, this.props.entries, 31)}
           </Habit>
@@ -53,41 +53,41 @@ class HabitApp extends React.Component {
     });
   }
 
-  delete(type, id, cascade) {
-    let newCollection = this.state[type].filter(item => item.id !== id);
-    let cascadeCollections = {};
-    let cascadeIds = {};
-    cascade.forEach((collectionType, index) => {
-      let newCollection;
-      if(index === 0) {
-        newCollection = this.state[collectionType].filter(item => {
-          if(item[type.slice(0, -1) + 'Id'] !== id) {
-            return true;
-          }
-          cascadeIds[collectionType] = cascadeIds[collectionType] || [];
-          cascadeIds[collectionType].push(item.id);
-          return false;
-        });
-      } else {
-        newCollection = this.state[collectionType].filter(item => {
-          if(cascadeIds[cascade[index - 1]]) {
-            if(cascadeIds[cascade[index - 1]].indexOf(item[cascade[index - 1].slice(0, -1) + 'Id']) === -1) {
-              return true;
-            }
-          } else {
-            return true;
-          }
-          cascadeIds[collectionType] = cascadeIds[collectionType] || [];
-          cascadeIds[collectionType].push(item.id);
-          return false;
-        });
-      }
-      cascadeCollections[collectionType] = newCollection;
-    });
-    this.setState({[type]: newCollection, ...cascadeCollections}, () => {
-      console.log(this.state);
-    });
-  }
+  // delete(type, id, cascade) {
+  //   let newCollection = this.state[type].filter(item => item.id !== id);
+  //   let cascadeCollections = {};
+  //   let cascadeIds = {};
+  //   cascade.forEach((collectionType, index) => {
+  //     let newCollection;
+  //     if(index === 0) {
+  //       newCollection = this.state[collectionType].filter(item => {
+  //         if(item[type.slice(0, -1) + 'Id'] !== id) {
+  //           return true;
+  //         }
+  //         cascadeIds[collectionType] = cascadeIds[collectionType] || [];
+  //         cascadeIds[collectionType].push(item.id);
+  //         return false;
+  //       });
+  //     } else {
+  //       newCollection = this.state[collectionType].filter(item => {
+  //         if(cascadeIds[cascade[index - 1]]) {
+  //           if(cascadeIds[cascade[index - 1]].indexOf(item[cascade[index - 1].slice(0, -1) + 'Id']) === -1) {
+  //             return true;
+  //           }
+  //         } else {
+  //           return true;
+  //         }
+  //         cascadeIds[collectionType] = cascadeIds[collectionType] || [];
+  //         cascadeIds[collectionType].push(item.id);
+  //         return false;
+  //       });
+  //     }
+  //     cascadeCollections[collectionType] = newCollection;
+  //   });
+  //   this.setState({[type]: newCollection, ...cascadeCollections}, () => {
+  //     console.log(this.state);
+  //   });
+  // }
 
   buildTrack(habitId, entries, range) {
     let track = [];
@@ -182,6 +182,9 @@ const mapDispatchToProps = (dispatch) => {
     changeHabitOrder(habitId, groupId, direction) {
       console.log('action prop', habitId, groupId, direction);
       dispatch(changeHabitOrder({habitId, groupId, direction}));
+    },
+    deleteHabit(habitId){
+      dispatch(deleteHabit({habitId}));
     }
   }
 };

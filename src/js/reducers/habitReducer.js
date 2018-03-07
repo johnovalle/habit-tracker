@@ -31,6 +31,11 @@ const habitReducer = ((state = habitState, action) => {
           
             break;
         case DELETE_HABIT:
+        console.log('payload', action.payload);
+          sorted = orderAndMapHabits(state.items.filter(habit => {
+            return habit.id !== action.payload.habitId;
+          }));
+          state = {...state, ...sorted};
             break;
     }
     return state;
