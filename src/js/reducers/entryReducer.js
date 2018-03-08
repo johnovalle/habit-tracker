@@ -9,6 +9,9 @@ const entryReducer = ((state = entryState, action) => {
         case ADD_ENTRY:
             break;
         case DELETE_ENTRY:
+            return state.filter(entry => {
+                return action.payload.entryIds.indexOf(entry.id) === -1;
+            });
             break;
     }
     return state;

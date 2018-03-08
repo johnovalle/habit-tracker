@@ -7,7 +7,7 @@ import AddForm from './AddForm';
 import {sameDay, numDaysBetween} from '../dateUtils';
 import {setGroups, editGroup, addGroup} from '../actions/groupActions';
 import {setHabits, editHabit, addHabit, changeHabitOrder, deleteHabit} from '../actions/habitActions';
-import {setEntries} from '../actions/entryActions';
+import {setEntries, deleteEntry} from '../actions/entryActions';
 
 class HabitApp extends React.Component {
 
@@ -44,7 +44,7 @@ class HabitApp extends React.Component {
           <Habit key={habit.id}
                  {...habit}
                  retitle={this.props.retitle}
-                 delete={() => this.props.deleteHabit(habit.id)}
+                 delete={() => this.props.deleteHabit([habit.id], habit.entries)}
                  reorder={this.props.changeHabitOrder}>
             {this.buildTrack(habit.id, this.props.entries, 31)}
           </Habit>
@@ -158,8 +158,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setState({groups, habits, entries}, callback) {
       console.log("Setting up app",groups, habits, entries);
-      dispatch(setGroups(groups));
-      dispatch(setHabits(habits));
+      dispatch(setGroups({groups, habits}));
+      dispatch(setHabits({habits, entries}));
       dispatch(setEntries(entries));
       callback();
     },
@@ -183,8 +183,9 @@ const mapDispatchToProps = (dispatch) => {
       console.log('action prop', habitId, groupId, direction);
       dispatch(changeHabitOrder({habitId, groupId, direction}));
     },
-    deleteHabit(habitId){
-      dispatch(deleteHabit({habitId}));
+    deleteHabit(habitIds, entryIds){
+      dispatch(deleteHabit({habitIds}));
+      dispatch(deleteEntry({entryIds}));
     }
   }
 };

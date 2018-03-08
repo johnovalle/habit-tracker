@@ -5,7 +5,9 @@ const habitReducer = ((state = habitState, action) => {
   let sorted;
     switch (action.type) {
         case SET_HABITS:
-          sorted = orderAndMapHabits(action.payload);
+          let habitsWithEntries = groupItemByContainer([...state.items, ...action.payload.habits], 
+          'entries', action.payload.entries, 'habitId');
+          sorted = orderAndMapHabits(habitsWithEntries);
           state = {...state, ...sorted};
             break;
         case ADD_HABIT:
@@ -33,7 +35,7 @@ const habitReducer = ((state = habitState, action) => {
         case DELETE_HABIT:
         console.log('payload', action.payload);
           sorted = orderAndMapHabits(state.items.filter(habit => {
-            return habit.id !== action.payload.habitId;
+            return action.payload.habitIds.indexOf(habit.id) === -1;
           }));
           state = {...state, ...sorted};
             break;
@@ -106,6 +108,17 @@ const changeHabitOrder = (state, {habitId, groupId, direction}) => { //need to a
 };
 // move habit from group to group
 
+const groupItemByContainer = (containers, type, items, fKey) => { //move to utility
+  let containerMap = {};
+  for(let i = 0; i < containers.length; i++) {
+    containerMap[containers[i].id] = containers[i];
+    containers[i][type] = [];
+  }
 
+  for(let i = 0; i < items.length; i++) {
+    containerMap[items[i][fKey]][type].push(items[i].id);
+  }
+  return containers;
+}
 
 export default habitReducer;
