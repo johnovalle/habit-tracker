@@ -9,7 +9,7 @@ const HabitGroup = (props) => {
               onClick={() => {props.retitle('groups', props.id, 'new group')}}>
               {props.title}
         </span>
-        <span  className="delete-button" onClick={() => {props.delete('groups', props.id, ['habits', 'entries'])}}>X</span>
+        <span  className="delete-button" onClick={props.delete}>X</span>
       </div>
         ) : <div  className="group-heading"><span className="group-title">{props.title}</span></div>
       }

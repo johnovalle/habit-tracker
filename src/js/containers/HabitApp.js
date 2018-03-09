@@ -5,7 +5,7 @@ import Habit from '../components/Habit';
 import HabitEntry from '../components/HabitEntry';
 import AddForm from './AddForm';
 import {sameDay, numDaysBetween} from '../dateUtils';
-import {setGroups, editGroup, addGroup} from '../actions/groupActions';
+import {setGroups, editGroup, addGroup, deleteGroup} from '../actions/groupActions';
 import {setHabits, editHabit, addHabit, changeHabitOrder, deleteHabit} from '../actions/habitActions';
 import {setEntries, deleteEntry} from '../actions/entryActions';
 
@@ -14,27 +14,23 @@ class HabitApp extends React.Component {
   constructor(props) {
     super(props);
     this.toggleEntryToHabit = this.toggleEntryToHabit.bind(this);
-    // this.delete = this.delete.bind(this);
   }
 
   componentDidMount() {
-    // this.props.setName(name)
     this.props.setState(this.props.data, () => { console.log(this.props) });
-
-    // this.orderAndMapHabits();
-    // console.log(this.state);
   }
 
   buildGroups(groups) {
-    // if(groups.length > 0) {
-      return groups.map((group) => {
-        return ( // try bind here
-          <HabitGroup key={group.id} {...group} retitle={this.props.retitle} /*delete={this.delete}*/>
-            {this.buildHabits(group.id, this.props.habits.items)}
-          </HabitGroup>
-        );
-      });
-    //}
+    return groups.map((group) => {
+      return ( // try bind here
+        <HabitGroup key={group.id} 
+                    {...group} 
+                    retitle={this.props.retitle} 
+                    delete={this.props.deleteGroup.bind(null, group, this.props.habits.items)}>
+          {this.buildHabits(group.id, this.props.habits.items)}
+        </HabitGroup>
+      );
+    });
   }
 
   buildHabits(groupId, habits) {
@@ -52,42 +48,6 @@ class HabitApp extends React.Component {
       }
     });
   }
-
-  // delete(type, id, cascade) {
-  //   let newCollection = this.state[type].filter(item => item.id !== id);
-  //   let cascadeCollections = {};
-  //   let cascadeIds = {};
-  //   cascade.forEach((collectionType, index) => {
-  //     let newCollection;
-  //     if(index === 0) {
-  //       newCollection = this.state[collectionType].filter(item => {
-  //         if(item[type.slice(0, -1) + 'Id'] !== id) {
-  //           return true;
-  //         }
-  //         cascadeIds[collectionType] = cascadeIds[collectionType] || [];
-  //         cascadeIds[collectionType].push(item.id);
-  //         return false;
-  //       });
-  //     } else {
-  //       newCollection = this.state[collectionType].filter(item => {
-  //         if(cascadeIds[cascade[index - 1]]) {
-  //           if(cascadeIds[cascade[index - 1]].indexOf(item[cascade[index - 1].slice(0, -1) + 'Id']) === -1) {
-  //             return true;
-  //           }
-  //         } else {
-  //           return true;
-  //         }
-  //         cascadeIds[collectionType] = cascadeIds[collectionType] || [];
-  //         cascadeIds[collectionType].push(item.id);
-  //         return false;
-  //       });
-  //     }
-  //     cascadeCollections[collectionType] = newCollection;
-  //   });
-  //   this.setState({[type]: newCollection, ...cascadeCollections}, () => {
-  //     console.log(this.state);
-  //   });
-  // }
 
   buildTrack(habitId, entries, range) {
     let track = [];
@@ -185,6 +145,18 @@ const mapDispatchToProps = (dispatch) => {
     },
     deleteHabit(habitIds, entryIds){
       dispatch(deleteHabit({habitIds}));
+      dispatch(deleteEntry({entryIds}));
+    },
+    deleteGroup(group, habits){
+      let entryIds = habits.reduce((acc, habit) => {
+        if (group.habits.indexOf(habit.id) !== -1) {
+          return acc = [...acc, ...habit.entries];
+        }
+        return acc;
+      }, []);
+
+      dispatch(deleteGroup({groupIds: [group.id]}));
+      dispatch(deleteHabit({habitIds: group.habits}));
       dispatch(deleteEntry({entryIds}));
     }
   }

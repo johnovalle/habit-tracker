@@ -2,6 +2,7 @@ import {SET_GROUPS, ADD_GROUP, EDIT_GROUP, DELETE_GROUP} from '../actions/action
 const groupState = {map: {}, items:[{id: null, title: 'Ungrouped'}]};
 
 const groupReducer = ((state = groupState, action) => {
+  let items;
     switch (action.type) {
         case SET_GROUPS:
             let groupsWithHabits = groupItemByContainer([...state.items, ...action.payload.groups], 
@@ -11,7 +12,7 @@ const groupReducer = ((state = groupState, action) => {
         case ADD_GROUP:
             break;
         case EDIT_GROUP:
-            let items = state.items.map(item => {
+            items = state.items.map(item => {
                 if(item.id === action.payload.id) {                
                     return Object.assign({}, item, action.payload); // {...item, ...action.playload};
                 }
@@ -20,6 +21,10 @@ const groupReducer = ((state = groupState, action) => {
             state = {...state, items};
             break;
         case DELETE_GROUP:
+            items = state.items.filter(group => {
+              return action.payload.groupIds.indexOf(group.id) === -1;
+            });
+            state = {...state, items};
             break;
     }
     return state;
