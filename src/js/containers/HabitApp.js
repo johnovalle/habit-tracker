@@ -40,7 +40,7 @@ class HabitApp extends React.Component {
         <Habit key={habit.id}
                 {...habit}
                 retitle={this.props.retitle}
-                delete={() => this.props.deleteHabit([habit.id], habit.entries)}
+                delete={() => this.props.deleteHabit(habit.id, habitEntries.map(entry => entry.id))}
                 reorder={this.props.changeHabitOrder}>
           {this.buildTrack(habit.id, habitEntries, 31)}
         </Habit>
@@ -134,8 +134,11 @@ const mapDispatchToProps = (dispatch) => {
       console.log('action prop', habitId, groupId, direction);
       dispatch(changeHabitOrder({habitId, groupId, direction}));
     },
-    deleteHabit(habitIds, entryIds){
-      dispatch(deleteHabit({habitIds}));
+    deleteHabit(habitId, entryIds){
+      //let entryIds = entries.filter(entry => habitId === entry.habitId)
+                                      // .map(entry => entry.id);
+
+      dispatch(deleteHabit({habitIds: [habitId]}));
       dispatch(deleteEntry({entryIds}));
     },
     deleteGroup(group, habits){
