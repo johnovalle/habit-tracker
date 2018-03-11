@@ -19,12 +19,17 @@ class HabitApp extends React.Component {
     return groups.map((group) => {
       
       let habits = this.props.habits.items.filter((habit) => habit.groupId === group.id);
-      
-      return ( // try bind here
+      let entryIds = habits.reduce((acc, habit) => {
+        let entries = this.props.entries.filter(entry => habit.id === entry.habitId)
+                                        .map(entry => entry.id);
+        return acc = [...acc, ...entries];
+      }, []);
+
+      return (
         <HabitGroup key={group.id} 
                     {...group} 
                     retitle={this.props.retitle} 
-                    delete={this.props.deleteGroup.bind(null, group, this.props.habits.items)}>
+                    delete={this.props.deleteGroup.bind(null, group, habits.map(habit => habit.id), entryIds)}>
           {this.buildHabits(habits)}
         </HabitGroup>
       );
@@ -135,22 +140,13 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(changeHabitOrder({habitId, groupId, direction}));
     },
     deleteHabit(habitId, entryIds){
-      //let entryIds = entries.filter(entry => habitId === entry.habitId)
-                                      // .map(entry => entry.id);
-
       dispatch(deleteHabit({habitIds: [habitId]}));
       dispatch(deleteEntry({entryIds}));
     },
-    deleteGroup(group, habits){
-      let entryIds = habits.reduce((acc, habit) => {
-        if (group.habits.indexOf(habit.id) !== -1) {
-          return acc = [...acc, ...habit.entries];
-        }
-        return acc;
-      }, []);
+    deleteGroup(group, habitIds, entryIds){
 
       dispatch(deleteGroup({groupIds: [group.id]}));
-      dispatch(deleteHabit({habitIds: group.habits}));
+      dispatch(deleteHabit({habitIds}));
       dispatch(deleteEntry({entryIds}));
     },
     toggleEntry(habitId, date, entry){

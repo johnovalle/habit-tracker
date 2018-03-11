@@ -5,9 +5,7 @@ const groupReducer = ((state = groupState, action) => {
   let items;
     switch (action.type) {
         case SET_GROUPS:
-            let groupsWithHabits = groupItemByContainer([...state.items, ...action.payload.groups], 
-                                                        'habits', action.payload.habits, 'groupId');
-            state = {...state, items: [...groupsWithHabits]};
+            state = {...state, items: [...state.items, ...action.payload.groups]};
             break;
         case ADD_GROUP:
             break;
@@ -29,18 +27,5 @@ const groupReducer = ((state = groupState, action) => {
     }
     return state;
 });
-
-const groupItemByContainer = (containers, type, items, fKey) => { //move to utility
-  let containerMap = {};
-  for(let i = 0; i < containers.length; i++) {
-    containerMap[containers[i].id] = containers[i];
-    containers[i][type] = [];
-  }
-
-  for(let i = 0; i < items.length; i++) {
-    containerMap[items[i][fKey]][type].push(items[i].id);
-  }
-  return containers;
-}
 
 export default groupReducer;
