@@ -7,14 +7,9 @@ import AddForm from './AddForm';
 import {sameDay, numDaysBetween} from '../dateUtils';
 import {setGroups, editGroup, addGroup, deleteGroup} from '../actions/groupActions';
 import {setHabits, editHabit, addHabit, changeHabitOrder, deleteHabit} from '../actions/habitActions';
-import {setEntries, deleteEntry} from '../actions/entryActions';
+import {setEntries, deleteEntry, addEntry} from '../actions/entryActions';
 
 class HabitApp extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.toggleEntryToHabit = this.toggleEntryToHabit.bind(this);
-  }
 
   componentDidMount() {
     this.props.setState(this.props.data, () => { console.log(this.props) });
@@ -64,7 +59,9 @@ class HabitApp extends React.Component {
         status = 'filled';
       }
       let statusClass = status + ' entry-block';
-      track.push(<HabitEntry key={d.toLocaleDateString('en-US')+habitId} className={statusClass} onClick={() => this.toggleEntryToHabit(habitId, d, entry)}/>);
+      track.push(<HabitEntry key={d.toLocaleDateString('en-US')+habitId} 
+                             className={statusClass} 
+                             onClick={() => this.props.toggleEntry(habitId, d, entry)}/>);
     }
     return track.reverse();
   }
@@ -72,16 +69,6 @@ class HabitApp extends React.Component {
   sortAndFilterEntries(entries, range) {
     let d = new Date();
     return entries.filter(entry => numDaysBetween(d, entry.date) < range).sort((a,b) => a.date < b.date);
-  }
-
-  toggleEntryToHabit(habitId, date, prevEntry) {
-    if (!prevEntry) {
-      let entry = {id: this.state.tempId, habitId, date};
-      this.setState({entries: [...this.state.entries, entry], tempId: this.state.tempId + 1});
-    } else {
-      let entries = this.state.entries.filter(entry => prevEntry.id !== entry.id);
-      this.setState({entries});
-    }
   }
 
   render() {
@@ -128,7 +115,7 @@ const mapDispatchToProps = (dispatch) => {
       if (type === 'groups') {
         dispatch(editGroup(payload));
       } else if (type === 'habits') {
-        dispatch(editHabit(payload))
+        dispatch(editHabit(payload));
       }
     },
     addToCollection(type, targetKey = null, targetId = null, title) {
@@ -136,7 +123,7 @@ const mapDispatchToProps = (dispatch) => {
       if (type === 'groups') {
         dispatch(addGroup(payload));
       } else if (type === 'habits') {
-        dispatch(addHabit(payload))
+        dispatch(addHabit(payload));
       }
     },
     changeHabitOrder(habitId, groupId, direction) {
@@ -158,7 +145,14 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(deleteGroup({groupIds: [group.id]}));
       dispatch(deleteHabit({habitIds: group.habits}));
       dispatch(deleteEntry({entryIds}));
-    }
+    },
+    toggleEntry(habitId, date, entry){
+      if (!entry) {
+        dispatch(addEntry({habitId, date}));
+      } else {
+        dispatch(deleteEntry({entryIds: [entry.id]}));
+      }
+    },
   }
 };
 
