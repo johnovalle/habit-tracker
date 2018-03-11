@@ -45,6 +45,7 @@ const habitReducer = ((state = habitState, action) => {
 
 // move to utility later
 const orderAndMapHabits = (items) => {
+  console.log('ORDERING AND MAPPING')
   let sorted = [...items].sort((a,b) => a.order - b.order);
   let habitOrderMap = {};
   sorted.forEach(habit => {

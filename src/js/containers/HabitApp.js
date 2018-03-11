@@ -17,38 +17,42 @@ class HabitApp extends React.Component {
 
   buildGroups(groups) {
     return groups.map((group) => {
+      
+      let habits = this.props.habits.items.filter((habit) => habit.groupId === group.id);
+      
       return ( // try bind here
         <HabitGroup key={group.id} 
                     {...group} 
                     retitle={this.props.retitle} 
                     delete={this.props.deleteGroup.bind(null, group, this.props.habits.items)}>
-          {this.buildHabits(group.id, this.props.habits.items)}
+          {this.buildHabits(habits)}
         </HabitGroup>
       );
     });
   }
 
-  buildHabits(groupId, habits) {
-    return habits.map((habit) => { //move this map to groups method
-      if(groupId === habit.groupId) {
-        return (
-          <Habit key={habit.id}
-                 {...habit}
-                 retitle={this.props.retitle}
-                 delete={() => this.props.deleteHabit([habit.id], habit.entries)}
-                 reorder={this.props.changeHabitOrder}>
-            {this.buildTrack(habit.id, this.props.entries, 31)}
-          </Habit>
-        );
-      }
+  buildHabits(habits) {
+    return habits.map((habit) => {
+      
+      let habitEntries = this.props.entries.filter(entry => habit.id === entry.habitId);
+
+      return (
+        <Habit key={habit.id}
+                {...habit}
+                retitle={this.props.retitle}
+                delete={() => this.props.deleteHabit([habit.id], habit.entries)}
+                reorder={this.props.changeHabitOrder}>
+          {this.buildTrack(habit.id, habitEntries, 31)}
+        </Habit>
+      );
+
     });
   }
 
   buildTrack(habitId, entries, range) {
     let track = [];
-    let habitEntries = entries.filter(entry => habitId === entry.habitId); // move this habits
-    let recentEntries = this.sortAndFilterEntries(habitEntries, range);
-    // console.log(recentEntries);
+    let recentEntries = this.sortAndFilterEntries(entries, range);
+
     for (let i = 0; i < range; i++) {
       let d = new Date();
       d.setDate(d.getDate() - i);
