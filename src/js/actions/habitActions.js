@@ -1,4 +1,4 @@
-import {SET_HABITS, ADD_HABIT, EDIT_HABIT, CHANGE_HABIT_ORDER, DELETE_HABIT} from './actionsTypes';
+import {SET_HABITS, ADD_HABIT, EDIT_HABIT, CHANGE_HABIT_ORDER, SELECT_HABIT, DELETE_HABIT} from './actionsTypes';
 
 export const setHabits = (habits) => { 
     return {
@@ -25,6 +25,13 @@ export const changeHabitOrder = (habit) => {
     return {
         type: CHANGE_HABIT_ORDER,
         payload: habit
+    };
+};
+
+export const selectHabit = (habitId) => {
+    return {
+        type: SELECT_HABIT,
+        payload: habitId
     };
 };
 

@@ -5,13 +5,19 @@ const Habit = (props) => {
   return(
     <div>
       <span onClick={() => {props.retitle('habits', props.id, 'new habit')}}>{props.title}</span>
-      <span className="order-button" 
-            onClick={() => {props.reorder(props.id, props.groupId, 'desc')}}>V</span>
-      <span className="order-button" 
-            onClick={() => {props.reorder(props.id, props.groupId, 'asc')}}>^</span>
       {props.children}
-      <span className="delete-button" 
-            onClick={() => {props.delete()}}>X</span>
+      <span onClick={props.select}>edit</span>
+      {props.selected &&
+        <div>
+          <span className="order-button" 
+                onClick={() => {props.reorder(props.id, props.groupId, 'desc')}}>V</span>
+          <span className="order-button" 
+                onClick={() => {props.reorder(props.id, props.groupId, 'asc')}}>^</span>
+          
+          <span className="delete-button" 
+                onClick={() => {props.delete()}}>X</span>
+        </div>
+      }
     </div>
   )
 }

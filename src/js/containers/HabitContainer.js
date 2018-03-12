@@ -4,7 +4,7 @@ import Habit from '../components/Habit';
 import HabitEntry from '../components/HabitEntry';
 import AddForm from './AddForm';
 import {sameDay, numDaysBetween} from '../dateUtils';
-import {editHabit, addHabit, changeHabitOrder, deleteHabit} from '../actions/habitActions';
+import {editHabit, addHabit, changeHabitOrder, selectHabit, deleteHabit} from '../actions/habitActions';
 import {deleteEntry, addEntry} from '../actions/entryActions';
 
 class HabitContainer extends React.Component {
@@ -13,13 +13,15 @@ class HabitContainer extends React.Component {
     return habits.map((habit) => {
       
       let habitEntries = this.props.entries.filter(entry => habit.id === entry.habitId);
-
+      console.log('selected', habit.id, this.props.selected, this.props.selected === habit.id)
       return (
         <Habit key={habit.id}
                 {...habit}
                 retitle={this.props.retitle}
                 delete={() => this.props.deleteHabit(habit.id, habitEntries.map(entry => entry.id))}
-                reorder={this.props.changeHabitOrder}>
+                reorder={this.props.changeHabitOrder}
+                selected={this.props.selected === habit.id}
+                select={this.props.select.bind(null, habit.id)}>
           {this.buildTrack(habit.id, habitEntries, 31)}
         </Habit>
       );
@@ -70,6 +72,7 @@ const mapStateToProps = (state, ownProps) => {
     habits: state.habits.items.filter((habit) => ownProps.habitIds.indexOf(habit.id) !== -1),
     entries: state.entries,
     groupId: ownProps.groupId,
+    selected: state.habits.selected,
 
   }
 };
@@ -86,17 +89,20 @@ const mapDispatchToProps = (dispatch) => {
       console.log('action prop', habitId, groupId, direction);
       dispatch(changeHabitOrder({habitId, groupId, direction}));
     },
-    deleteHabit(habitId, entryIds){
+    deleteHabit(habitId, entryIds) {
       dispatch(deleteHabit({habitIds: [habitId]}));
       dispatch(deleteEntry({entryIds}));
     },
-    toggleEntry(habitId, date, entry){
+    toggleEntry(habitId, date, entry) {
       if (!entry) {
         dispatch(addEntry({habitId, date}));
       } else {
         dispatch(deleteEntry({entryIds: [entry.id]}));
       }
     },
+    select(habitId) {
+      dispatch(selectHabit(habitId));
+    }
   }
 };
 

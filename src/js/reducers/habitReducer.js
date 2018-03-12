@@ -1,44 +1,51 @@
-import {SET_HABITS, ADD_HABIT, EDIT_HABIT, CHANGE_HABIT_ORDER, DELETE_HABIT} from '../actions/actionsTypes';
-const habitState = {map: {}, items: [], tempId:44};
+import {SET_HABITS, ADD_HABIT, EDIT_HABIT, CHANGE_HABIT_ORDER, SELECT_HABIT, DELETE_HABIT} from '../actions/actionsTypes';
+const habitState = {map: {}, items: [], selected: null, tempId:44};
 
 const habitReducer = ((state = habitState, action) => {
   let sorted;
-    switch (action.type) {
-        case SET_HABITS:
-          sorted = orderAndMapHabits([...state.items, ...action.payload.habits]);
-          state = {...state, ...sorted};
-            break;
-        case ADD_HABIT:
-          sorted = orderAndMapHabits(addToCollection(state, action.payload));
-          state = {...state, ...sorted, tempId: state.tempId + 1};
-            break;
-        case EDIT_HABIT:
-            let items = state.items.map(item => {
-                if(item.id === action.payload.id) {                
-                    return Object.assign({}, item, action.payload); // {...item, ...action.playload};
-                }
-                return item;
-            });
-            state = {...state, items};
-            break;
-        case CHANGE_HABIT_ORDER:
-            console.log('payload', action.payload);
-          let reordered = changeHabitOrder(state, action.payload);
-          if (reordered) {
-            sorted = orderAndMapHabits(reordered);
-            state = {...state, ...sorted};
+  switch (action.type) {
+
+    case SET_HABITS:
+      sorted = orderAndMapHabits([...state.items, ...action.payload.habits]);
+      state = {...state, ...sorted};
+      break;
+
+    case ADD_HABIT:
+      sorted = orderAndMapHabits(addToCollection(state, action.payload));
+      state = {...state, ...sorted, tempId: state.tempId + 1};
+      break;
+
+    case EDIT_HABIT:
+      let items = state.items.map(item => {
+          if(item.id === action.payload.id) {                
+              return Object.assign({}, item, action.payload); // {...item, ...action.playload};
           }
-          
-            break;
-        case DELETE_HABIT:
-        console.log('payload', action.payload);
-          sorted = orderAndMapHabits(state.items.filter(habit => {
-            return action.payload.habitIds.indexOf(habit.id) === -1;
-          }));
-          state = {...state, ...sorted};
-            break;
-    }
-    return state;
+          return item;
+      });
+      state = {...state, items};
+      break;
+
+    case CHANGE_HABIT_ORDER:
+      let reordered = changeHabitOrder(state, action.payload);
+      if (reordered) {
+        sorted = orderAndMapHabits(reordered);
+        state = {...state, ...sorted};
+      }
+      break;
+
+    case DELETE_HABIT:
+      sorted = orderAndMapHabits(state.items.filter(habit => {
+        return action.payload.habitIds.indexOf(habit.id) === -1;
+      }));
+      state = {...state, ...sorted};
+      break;
+
+    case SELECT_HABIT:
+      action.payload = state.selected === action.payload ? null : action.payload;
+      state = {...state, selected: action.payload};
+      break;
+  }
+  return state;
 });
 
 // move to utility later
