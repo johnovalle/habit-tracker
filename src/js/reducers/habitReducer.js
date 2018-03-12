@@ -52,36 +52,31 @@ const orderAndMapHabits = (items) => {
   return {items: sorted, map: habitOrderMap};
 };
 
-const addToCollection = (state, {targetKey = null, targetId = null, title}) => {
+const addToCollection = (state, {targetKey = 'groupId', targetId = null, title}) => {
   let newItem;
-  if(targetKey) {
+  if(targetId) {
     let order = state.items.filter(item => item[targetKey] === parseInt(targetId)).length;
     newItem = {id: state.tempId, title, [targetKey]: parseInt(targetId), order};
   } else {
-    newItem = {id: state.tempId, title, order: state.items.length};
+    newItem = {id: state.tempId, title, order: state.items.length, [targetKey]: null};
   }
 
   return [...state.items, newItem];
 };
 
-const changeHabitOrder = (state, {habitId, groupId, direction}) => { //need to add order when adding habit
+const changeHabitOrder = (state, {habitId, groupId, direction}) => {
   let groupOrder = state.map[groupId];
   let currentLocation = groupOrder.indexOf(habitId);
   let swap;
-  // let newOrder = [...groupOrder];
   let dirModifier = 1;
   let swapped = false;
   console.log(habitId, groupId, direction, currentLocation);
 
   if (direction === 'asc' && currentLocation !== 0) { // change direction from asc to -1
     swap = groupOrder[currentLocation - 1];
-    // newOrder[currentLocation - 1] = groupOrder[currentLocation];
-    // newOrder[currentLocation] = swap;
     swapped = true;
   } else if (direction === 'desc' && currentLocation !== groupOrder.length - 1) {
     swap = groupOrder[currentLocation + 1];
-    // newOrder[currentLocation + 1] = groupOrder[currentLocation];
-    // newOrder[currentLocation] = swap;
     dirModifier *= -1;
     swapped = true;
   }
@@ -97,10 +92,7 @@ const changeHabitOrder = (state, {habitId, groupId, direction}) => { //need to a
     });
 
     return newHabits;
-    // this.setState({habitOrderMap: {...this.state.habitOrderMap, [groupId]: newOrder },
-    //               habits: newHabits}, () => {
-    //                 this.orderAndMapHabits();
-    //               });
+    
   } 
   return false;
 };

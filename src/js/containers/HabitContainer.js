@@ -58,7 +58,6 @@ class HabitContainer extends React.Component {
       {this.buildHabits(this.props.habits)}
       <AddForm
           title='Add a new habit'
-          targetKey='groupId'
           targetId={this.props.groupId}
           action={this.props.addToCollection}
         />
@@ -80,9 +79,8 @@ const mapDispatchToProps = (dispatch) => {
     retitle(id, title) {
       dispatch(editHabit({id, title}));
     },
-    addToCollection(targetKey = null, targetId = null, title) {
-      const payload = {targetKey, targetId, title};
-      dispatch(addHabit(payload));
+    addToCollection(targetId, title) {
+      dispatch(addHabit({targetId, title}));
     },
     changeHabitOrder(habitId, groupId, direction) {
       console.log('action prop', habitId, groupId, direction);

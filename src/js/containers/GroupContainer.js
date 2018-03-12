@@ -4,7 +4,7 @@ import HabitGroup from '../components/HabitGroup';
 import HabitContainer from './HabitContainer';
 import AddForm from './AddForm';
 import {editGroup, addGroup, deleteGroup} from '../actions/groupActions';
-import {deleteHabit} from '../actions/habitActions';
+import {addHabit, deleteHabit} from '../actions/habitActions';
 import {deleteEntry} from '../actions/entryActions';
 
 class GroupContainer extends React.Component {
@@ -38,13 +38,10 @@ class GroupContainer extends React.Component {
           title='Add a new group'
           action={this.props.addToCollection}
         />
-      {/*<AddForm
-          type='habits'
+      <AddForm
           title='Add a new habit'
-          targetKey=''
-          targetId='' 
-          action={this.props.addToCollection}
-        />*/}
+          action={this.props.addToHabits}
+        />
       </div>)
   }
 }
@@ -67,9 +64,13 @@ const mapDispatchToProps = (dispatch) => {
         dispatch(editHabit(payload));
       }
     },
-    addToCollection(targetKey = null, targetId = null, title) {
-      const payload = {targetKey, targetId, title};
+    addToCollection(targetId = null, title) {
+      const payload = {targetId, title};
       dispatch(addGroup(payload));
+    },
+    addToHabits(targetId = null, title) {
+      const payload = {targetId, title};
+      dispatch(addHabit(payload));
     },
     deleteGroup(group, habitIds, entryIds){
 
