@@ -53,13 +53,10 @@ const orderAndMapHabits = (items) => {
 };
 
 const addToCollection = (state, {targetKey = 'groupId', targetId = null, title}) => {
-  let newItem;
-  if(targetId) {
-    let order = state.items.filter(item => item[targetKey] === parseInt(targetId)).length;
-    newItem = {id: state.tempId, title, [targetKey]: parseInt(targetId), order};
-  } else {
-    newItem = {id: state.tempId, title, order: state.items.length, [targetKey]: null};
-  }
+  targetId = targetId ? parseInt(targetId) : targetId;
+  let order = state.items.filter(item => item[targetKey] === targetId).length; 
+ 
+  let newItem = {id: state.tempId, title, [targetKey]: targetId, order}; 
 
   return [...state.items, newItem];
 };
@@ -70,7 +67,7 @@ const changeHabitOrder = (state, {habitId, groupId, direction}) => {
   let swap;
   let dirModifier = 1;
   let swapped = false;
-  console.log(habitId, groupId, direction, currentLocation);
+  // console.log(habitId, groupId, direction, currentLocation);
 
   if (direction === 'asc' && currentLocation !== 0) { // change direction from asc to -1
     swap = groupOrder[currentLocation - 1];
