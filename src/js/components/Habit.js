@@ -4,7 +4,7 @@ const Habit = (props) => {
   // habitId, groupId, direction
   return(
     <div>
-      <span onClick={() => {props.retitle('habits', props.id, 'new habit')}}>{props.title}</span>
+      <span onClick={() => {props.retitle(props.id, 'new habit')}}>{props.title}</span>
       {props.children}
       <span onClick={props.select}>edit</span>
       {props.selected &&
