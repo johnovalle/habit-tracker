@@ -1,5 +1,6 @@
 import {SET_GROUPS, ADD_GROUP, EDIT_GROUP, DELETE_GROUP} from '../actions/actionsTypes';
 const groupState = {map: {}, items:[{id: null, title: 'Ungrouped'}]};
+let tempId = 789;
 
 const groupReducer = ((state = groupState, action) => {
   let items;
@@ -8,6 +9,9 @@ const groupReducer = ((state = groupState, action) => {
             state = {...state, items: [...state.items, ...action.payload.groups]};
             break;
         case ADD_GROUP:
+            let group = {id: tempId, ...action.payload};
+            tempId++;
+            state = {...state, items: [...state.items, group]};
             break;
         case EDIT_GROUP:
             items = state.items.map(item => {

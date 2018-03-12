@@ -17,13 +17,6 @@ class HabitApp extends React.Component {
       <div className="content">
         <h1 className="app-title">Habit Tracker</h1>
         <GroupContainer />
-        <AddForm
-          type='habits'
-          title='Add a new habit'
-          targetKey=''
-          targetId='' /* test this out*/
-          action={this.props.addToCollection}
-        />
       </div>
     );
   }

@@ -38,6 +38,13 @@ class GroupContainer extends React.Component {
           title='Add a new group'
           action={this.props.addToCollection}
         />
+      {/*<AddForm
+          type='habits'
+          title='Add a new habit'
+          targetKey=''
+          targetId='' 
+          action={this.props.addToCollection}
+        />*/}
       </div>)
   }
 }
