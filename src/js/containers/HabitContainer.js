@@ -13,7 +13,7 @@ class HabitContainer extends React.Component {
     return habits.map((habit) => {
       
       let habitEntries = this.props.entries.filter(entry => habit.id === entry.habitId);
-      console.log('selected', habit.id, this.props.selected, this.props.selected === habit.id)
+      // console.log('selected', habit.id, this.props.selected, this.props.selected === habit.id)
       return (
         <Habit key={habit.id}
                 {...habit}

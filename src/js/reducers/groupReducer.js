@@ -1,5 +1,5 @@
-import {SET_GROUPS, ADD_GROUP, EDIT_GROUP, DELETE_GROUP} from '../actions/actionsTypes';
-const groupState = {map: {}, items:[{id: null, title: 'Ungrouped'}]};
+import {SET_GROUPS, ADD_GROUP, EDIT_GROUP, DELETE_GROUP, SELECT_GROUP} from '../actions/actionsTypes';
+const groupState = {map: {}, items:[{id: null, title: 'Ungrouped'}], selected: null};
 let tempId = 789;
 
 const groupReducer = ((state = groupState, action) => {
@@ -8,11 +8,13 @@ const groupReducer = ((state = groupState, action) => {
         case SET_GROUPS:
             state = {...state, items: [...state.items, ...action.payload.groups]};
             break;
+
         case ADD_GROUP:
             let group = {id: tempId, ...action.payload};
             tempId++;
             state = {...state, items: [...state.items, group]};
             break;
+
         case EDIT_GROUP:
             items = state.items.map(item => {
                 if(item.id === action.payload.id) {                
@@ -22,6 +24,12 @@ const groupReducer = ((state = groupState, action) => {
             });
             state = {...state, items};
             break;
+        
+        case SELECT_GROUP:
+            action.payload = state.selected === action.payload ? null : action.payload;
+            state = {...state, selected: action.payload};
+            break;
+
         case DELETE_GROUP:
             items = state.items.filter(group => {
               return action.payload.groupIds.indexOf(group.id) === -1;

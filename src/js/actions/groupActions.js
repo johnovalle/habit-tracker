@@ -1,4 +1,4 @@
-import {SET_GROUPS, ADD_GROUP, EDIT_GROUP, DELETE_GROUP} from './actionsTypes';
+import {SET_GROUPS, ADD_GROUP, EDIT_GROUP, SELECT_GROUP, DELETE_GROUP} from './actionsTypes';
 
 export const setGroups = (groups) => {
     console.log('setGroups ACTION');
@@ -20,6 +20,13 @@ export const editGroup = (group) => {
     return {
         type: EDIT_GROUP,
         payload: group
+    };
+};
+
+export const selectGroup = (groupId) => {
+    return {
+        type: SELECT_GROUP,
+        payload: groupId
     };
 };
 
