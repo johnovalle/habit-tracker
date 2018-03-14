@@ -68,12 +68,13 @@ const addToCollection = (state, {targetKey = 'groupId', targetId = null, title})
   return [...state.items, newItem];
 };
 
+// look for ways to reduce complexity of this function
 const changeHabitOrder = (state, {target, groupId, direction}) => {
   let groupOrder = state.map[groupId];
   let currentLocation = groupOrder.indexOf(target.id);
   let swap;
   let swapped = false;
-  // console.log(habitId, groupId, direction, currentLocation);
+  let swapTarget;
 
   if ((direction === -1 && currentLocation !== 0) || 
       (direction === 1 && currentLocation !== groupOrder.length - 1)) { 
@@ -82,12 +83,18 @@ const changeHabitOrder = (state, {target, groupId, direction}) => {
   }
 
   if (swapped) {
+    for (let habit of state.items) {
+      if (habit.id === swap) {
+        swapTarget = habit;
+      }
+    }
+
     let newHabits = state.items.map(habit => {
       if (habit.id === swap) {
-        return {...habit, order: (habit.order + direction * -1) };
+        return {...habit, order: target.order };
       }
       if (habit.id === target.id) {
-        return {...habit, order: (habit.order + direction) };
+        return {...habit, order: swapTarget.order };
       }
       return habit;
     });
