@@ -7,6 +7,10 @@ const Group = (props) => {
       {props.id && <span onClick={props.select}>edit</span>}
     </div>
       {props.selected && <div className='group-controls'>
+        <span className="order-button" 
+              onClick={() => {props.reorder(1)}}>V</span>
+        <span className="order-button" 
+              onClick={() => {props.reorder(-1)}}>^</span>
         <span  className="delete-button" onClick={props.delete}>X</span>
         <span className="group-title" 
                 onClick={() => {props.retitle('groups', props.id, 'new group')}}>

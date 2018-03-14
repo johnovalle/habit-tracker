@@ -1,6 +1,7 @@
 export const SET_GROUPS = 'SET_GROUPS';
 export const ADD_GROUP = 'ADD_GROUP';
 export const EDIT_GROUP = 'EDIT_GROUP';
+export const CHANGE_GROUP_ORDER = 'CHANGE_GROUP_ORDER';
 export const SELECT_GROUP = 'SELECT_GROUP';
 export const DELETE_GROUP = 'DELETE_GROUP';
 export const SET_HABITS = 'SET_HABITS';

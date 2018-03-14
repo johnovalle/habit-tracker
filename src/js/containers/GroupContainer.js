@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import Group from '../components/Group';
 import HabitContainer from './HabitContainer';
 import AddForm from './AddForm';
-import {editGroup, addGroup, deleteGroup, selectGroup} from '../actions/groupActions';
+import {editGroup, addGroup, deleteGroup, changeGroupOrder, selectGroup} from '../actions/groupActions';
 import {addHabit, deleteHabit} from '../actions/habitActions';
 import {deleteEntry} from '../actions/entryActions';
 
@@ -24,6 +24,7 @@ class GroupContainer extends React.Component {
                     {...group} 
                     retitle={this.props.retitle} 
                     delete={this.props.deleteGroup.bind(null, group, habits.map(habit => habit.id), entryIds)}
+                    reorder={this.props.changeGroupOrder.bind(null, group)}
                     selected={this.props.selected && this.props.selected === group.id}
                     select={this.props.select.bind(null, group.id)}>
           {/*this.buildHabits(habits)*/}
@@ -74,6 +75,10 @@ const mapDispatchToProps = (dispatch) => {
     addToHabits(targetId = null, title) {
       const payload = {targetId, title};
       dispatch(addHabit(payload));
+    },
+    changeGroupOrder(target, direction) {
+      console.log('action prop', target, direction);
+      dispatch(changeGroupOrder({target, direction}));
     },
     deleteGroup(group, habitIds, entryIds){
 
