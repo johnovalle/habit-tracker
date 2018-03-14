@@ -53,25 +53,21 @@ const groupReducer = ((state = groupState, action) => {
 const changeOrder = (state, {target, direction}) => {
     let currentLocation = state.items.indexOf(target);
     let swap;
-    let dirModifier = 1;
     let swapped = false;
-    console.log(target, direction, currentLocation);
   
-    if (direction === -1 && currentLocation !== 1) {
+    if ((direction === -1 && currentLocation !== 1) || 
+        (direction === 1 && currentLocation !== state.items.length - 1)) {
       swap = state.items[currentLocation + direction];
-      swapped = true;
-    } else if (direction === 1 && currentLocation !== state.items.length - 1) {
-      swap = state.items[currentLocation + direction];
-      dirModifier *= -1;
       swapped = true;
     }
+
     if (swapped && swap.id) {
       let newGroups = state.items.map(group => {
         if (group.id === swap.id) {
-          return {...group, order: (group.order + dirModifier) }
+          return {...group, order: target.order };
         }
         if (group.id === target.id) {
-          return {...group, order: (group.order + (dirModifier * -1)) }
+          return {...group, order: swap.order };
         }
         return group;
       });

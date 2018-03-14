@@ -19,7 +19,7 @@ class HabitContainer extends React.Component {
                 {...habit}
                 retitle={this.props.retitle}
                 delete={() => this.props.deleteHabit(habit.id, habitEntries.map(entry => entry.id))}
-                reorder={this.props.changeHabitOrder}
+                reorder={this.props.changeHabitOrder.bind(null, habit, habit.groupId)}
                 selected={this.props.selected === habit.id}
                 select={this.props.select.bind(null, habit.id)}>
           {this.buildTrack(habit.id, habitEntries, 31)}
@@ -85,9 +85,8 @@ const mapDispatchToProps = (dispatch) => {
     addToCollection(targetId, title) {
       dispatch(addHabit({targetId, title}));
     },
-    changeHabitOrder(habitId, groupId, direction) {
-      console.log('action prop', habitId, groupId, direction);
-      dispatch(changeHabitOrder({habitId, groupId, direction}));
+    changeHabitOrder(target, groupId, direction) {
+      dispatch(changeHabitOrder({target, groupId, direction}));
     },
     deleteHabit(habitId, entryIds) {
       dispatch(deleteHabit({habitIds: [habitId]}));

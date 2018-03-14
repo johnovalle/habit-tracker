@@ -68,29 +68,26 @@ const addToCollection = (state, {targetKey = 'groupId', targetId = null, title})
   return [...state.items, newItem];
 };
 
-const changeHabitOrder = (state, {habitId, groupId, direction}) => {
+const changeHabitOrder = (state, {target, groupId, direction}) => {
   let groupOrder = state.map[groupId];
-  let currentLocation = groupOrder.indexOf(habitId);
+  let currentLocation = groupOrder.indexOf(target.id);
   let swap;
-  let dirModifier = 1;
   let swapped = false;
   // console.log(habitId, groupId, direction, currentLocation);
 
-  if (direction === 'asc' && currentLocation !== 0) { // change direction from asc to -1
-    swap = groupOrder[currentLocation - 1];
-    swapped = true;
-  } else if (direction === 'desc' && currentLocation !== groupOrder.length - 1) {
-    swap = groupOrder[currentLocation + 1];
-    dirModifier *= -1;
+  if ((direction === -1 && currentLocation !== 0) || 
+      (direction === 1 && currentLocation !== groupOrder.length - 1)) { 
+    swap = groupOrder[currentLocation + direction];
     swapped = true;
   }
+
   if (swapped) {
     let newHabits = state.items.map(habit => {
       if (habit.id === swap) {
-        return {...habit, order: (habit.order + dirModifier) }
+        return {...habit, order: (habit.order + direction * -1) };
       }
-      if (habit.id === habitId) {
-        return {...habit, order: (habit.order + (dirModifier * -1)) }
+      if (habit.id === target.id) {
+        return {...habit, order: (habit.order + direction) };
       }
       return habit;
     });

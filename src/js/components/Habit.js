@@ -10,9 +10,9 @@ const Habit = (props) => {
       {props.selected &&
         <div>
           <span className="order-button" 
-                onClick={() => {props.reorder(props.id, props.groupId, 'desc')}}>V</span>
+                onClick={() => {props.reorder(1)}}>V</span>
           <span className="order-button" 
-                onClick={() => {props.reorder(props.id, props.groupId, 'asc')}}>^</span>
+                onClick={() => {props.reorder(-1)}}>^</span>
           
           <span className="delete-button" 
                 onClick={() => {props.delete()}}>X</span>
