@@ -8,6 +8,7 @@ export const SET_HABITS = 'SET_HABITS';
 export const ADD_HABIT = 'ADD_HABIT';
 export const EDIT_HABIT = 'EDIT_HABIT';
 export const CHANGE_HABIT_ORDER = 'CHANGE_HABIT_ORDER';
+export const CHANGE_HABIT_GROUP = 'CHANGE_HABIT_GROUP';
 export const SELECT_HABIT = 'SELECT_HABIT';
 export const DELETE_HABIT = 'DELETE_HABIT';
 export const SET_ENTRIES = 'SET_ENTRIES';
