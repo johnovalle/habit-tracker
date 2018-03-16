@@ -20,7 +20,6 @@ class ChangeGroupSelect extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    // this.props.action(this.props.targetId, this.state.value);
 
     this.props.change(parseInt(this.state.value) || null);
     this.setState({value: ''});
@@ -35,7 +34,6 @@ class ChangeGroupSelect extends React.Component {
       }
       return <option key={group.id} value={group.id}>{group.title}</option>
     });
-    // console.log(this.props, this.state);
     
     return (
       <form onSubmit={this.handleSubmit}>
@@ -53,7 +51,6 @@ class ChangeGroupSelect extends React.Component {
 
 
 const mapStateToProps = (state, ownProps) => {
-  console.log(ownProps);
   return {
     groups: state.groups.items,
     groupId: ownProps.groupId,

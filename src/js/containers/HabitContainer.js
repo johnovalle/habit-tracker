@@ -4,7 +4,7 @@ import Habit from '../components/Habit';
 import HabitEntry from '../components/HabitEntry';
 import AddForm from './AddForm';
 import {sameDay, numDaysBetween} from '../dateUtils';
-import {editHabit, addHabit, changeHabitOrder, selectHabit, deleteHabit} from '../actions/habitActions';
+import {addHabit, changeHabitOrder, selectHabit, deleteHabit} from '../actions/habitActions';
 import {deleteEntry, addEntry} from '../actions/entryActions';
 
 class HabitContainer extends React.Component {
@@ -17,7 +17,6 @@ class HabitContainer extends React.Component {
       return (
         <Habit key={habit.id}
                 {...habit}
-                retitle={this.props.retitle}
                 delete={() => this.props.deleteHabit(habit.id, habitEntries.map(entry => entry.id))}
                 reorder={this.props.changeHabitOrder.bind(null, habit, habit.groupId)}
                 selected={this.props.selected === habit.id}
@@ -79,9 +78,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    retitle(id, title) {
-      dispatch(editHabit({id, title}));
-    },
     addToCollection(targetId, title) {
       dispatch(addHabit({targetId, title}));
     },
