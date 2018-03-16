@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {editHabit} from '../actions/habitActions';
+import {editGroup} from '../actions/groupActions';
 
 class RetitleForm extends React.Component {
 
@@ -47,7 +48,12 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     retitle(title) {
-      dispatch(editHabit({id: ownProps.id, title}));
+      if (ownProps.type === 'habit') {
+        dispatch(editHabit({id: ownProps.id, title}));
+      } else if (ownProps.type === 'group') {
+        dispatch(editGroup({id: ownProps.id, title}));
+      }
+      
     },
   }
 };

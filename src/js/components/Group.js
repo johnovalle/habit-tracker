@@ -1,4 +1,5 @@
 import React from 'react';
+import RetitleForm from '../containers/RetitleForm';
 
 const Group = (props) => {
   return(
@@ -12,10 +13,7 @@ const Group = (props) => {
         <span className="order-button" 
               onClick={() => {props.reorder(-1)}}>^</span>
         <span  className="delete-button" onClick={props.delete}>X</span>
-        <span className="group-title" 
-                onClick={() => {props.retitle('groups', props.id, 'new group')}}>
-                {props.title}
-        </span>
+        <RetitleForm id={props.id} title={props.title} type='group' />
       </div>}
       
       {props.children}

@@ -19,7 +19,7 @@ const Habit = (props) => {
                 onClick={() => {props.reorder(-1)}}>^</span>
           
           <ChangeGroupSelect habitId={props.id} groupId={props.groupId} />
-          <RetitleForm id={props.id} title={props.title} />
+          <RetitleForm id={props.id} title={props.title} type='habit' />
           
           <span className="delete-button" 
                 onClick={() => {props.delete()}}>X</span>
