@@ -1,11 +1,13 @@
 import React from 'react';
+import {connect} from 'react-redux';
+import {changeHabitGroup} from '../actions/habitActions';
 
-export default class ChangeGroupSelect extends React.Component {
+class ChangeGroupSelect extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-        value: '',
+        value: this.props.groupId,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -18,20 +20,28 @@ export default class ChangeGroupSelect extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    this.props.action(this.props.targetId, this.state.value);
+    // this.props.action(this.props.targetId, this.state.value);
+
+    this.props.change(parseInt(this.state.value) || null);
     this.setState({value: ''});
   }
 
 
   render() {
-    let options = this.props.group.map(group => {
-      return <option value={group.id}>{group.title}</option>
+    let currentGroup;
+    let options = this.props.groups.map(group => {
+      if (group.id === this.props.groupId) {
+        currentGroup = group;
+      }
+      return <option key={group.id} value={group.id}>{group.title}</option>
     });
+    // console.log(this.props, this.state);
+    
     return (
       <form onSubmit={this.handleSubmit}>
         <label>
-          {this.props.title}:
-          <select name={/**/} value={this.props.groupId} onChange={this.handleChange}>
+          Change group:
+          <select name={currentGroup.title} value={this.state.value || 'null'} onChange={this.handleChange}>
             {options}
           </select>
         </label>
@@ -40,3 +50,22 @@ export default class ChangeGroupSelect extends React.Component {
     );
   }
 }
+
+
+const mapStateToProps = (state, ownProps) => {
+  console.log(ownProps);
+  return {
+    groups: state.groups.items,
+    groupId: ownProps.groupId,
+  }
+};
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    change(groupId) {
+      dispatch(changeHabitGroup({groupId, habitId: ownProps.habitId}));
+    },
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChangeGroupSelect);
