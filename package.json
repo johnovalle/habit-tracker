@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server/index.js --exec babel-node",
-    "test": "mocha buildScripts/testSetup \"src/**/*.test.js\""
   },
   "repository": {
     "type": "git",
@@ -25,13 +24,11 @@
     "knex": "^0.14.2",
     "morgan": "^1.9.0",
     "pg": "^7.4.1",
-    "pg-hstore": "^2.3.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.7",
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
-    "sequelize": "^4.28.6",
     "sqlite3": "^3.1.13"
   },
   "devDependencies": {
