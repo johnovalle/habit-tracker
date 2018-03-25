@@ -4,7 +4,7 @@
   "description": "Full-stack Node, SQL, React app for tracking habits",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server/index.js --exec babel-node",
+    "start": "nodemon server/index.js --exec babel-node"
   },
   "repository": {
     "type": "git",
