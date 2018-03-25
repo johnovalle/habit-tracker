@@ -6,4 +6,8 @@ const knex = require('knex')({
   },
 });
 
+knex.on( 'query', function( queryData ) {
+  console.log( queryData );
+});
+
 module.exports = knex;
