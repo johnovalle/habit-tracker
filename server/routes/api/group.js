@@ -22,19 +22,25 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   db('habit_group').where({id: req.params.id})
-                  .update({
+    .update({
       title: req.body.title || null,
       priority: req.body.priority || null,
     })
     .returning('*').then(data => {
-      res.send(data);
+      res.send(data[0]);
     });
 });
 
 router.patch('/:id', (req, res) => {
   db('habit_group').where({id: req.params.id}).update(req.body).returning('*').then(data => {
-      res.send(data);
+      res.send(data[0]);
   });
 });
+
+router.delete('/:id', (req, res) => {
+  db('habit_group').where({id: req.params.id}).del().then(() => {
+    res.status(200).send('group deleted');
+  });
+})
 
 module.exports = router;
