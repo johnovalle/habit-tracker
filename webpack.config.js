@@ -1,14 +1,16 @@
-import webpack from 'webpack';
-import path from 'path';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
+const webpack = require('webpack');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-export default {
+console.log('LOOOOOOOG', path.resolve(__dirname, 'client/js/index'));
+
+module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx', '.json']
   },
-  devtool: 'inline-source-map',
+  // devtool: 'inline-source-map',
   entry: [
-    path.resolve(__dirname, 'src/js/index'),
+    path.resolve(__dirname, 'client/js/index'),
   ],
   target: 'web',
   plugins: [
@@ -18,7 +20,7 @@ export default {
       noInfo: true // false will show every file bundled
     }),
     new HtmlWebpackPlugin({ // Creat html that has reference to bundle
-      template: 'src/index.ejs',
+      template: 'client/index.ejs',
       inject: true
     })
   ],
