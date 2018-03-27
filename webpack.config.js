@@ -2,8 +2,6 @@ const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-console.log('LOOOOOOOG', path.resolve(__dirname, 'client/js/index'));
-
 module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx', '.json']

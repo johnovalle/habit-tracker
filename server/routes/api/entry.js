@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db');
 
-const normalize = ['date', {habitId: 'habit_id'}];
+const normalize = ['id', {habitId: 'habit_id', date: 'created_at'}];
 
 router.get('/', (req, res) => {
-  db('entry').select().then(data => {
+  db('entry').select(normalize).then(data => {
     res.send(data);
   });
 });

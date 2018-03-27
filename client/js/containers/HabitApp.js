@@ -1,5 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import axios from 'axios';
 import AddForm from './AddForm';
 import GroupContainer from './GroupContainer';
 import {setGroups} from '../actions/groupActions';
@@ -9,7 +10,7 @@ import {setEntries} from '../actions/entryActions';
 class HabitApp extends React.Component {
 
   componentDidMount() {
-    this.props.setState(this.props.data, () => { console.log(this.props) });
+    this.props.setState();
   }
 
   render() {
@@ -32,12 +33,19 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setState({groups, habits, entries}, callback) {
-      console.log("Setting up app",groups, habits, entries);
-      dispatch(setGroups({groups, habits}));
-      dispatch(setHabits({habits, entries}));
-      dispatch(setEntries(entries));
-      callback();
+    setState() {
+      axios.all([
+        axios.get('/api/group'),
+        axios.get('/api/habit'),
+        axios.get('/api/entry'),
+      ])
+      .then(axios.spread((groups, habits, entries) => {
+        console.log("Setting up app",groups, habits, entries);
+        dispatch(setGroups({groups: groups.data, habits: habits.data}));
+        dispatch(setHabits({habits: habits.data, entries: entries.data}));
+        dispatch(setEntries(entries.data));
+      }))
+      .catch(error => console.log(error));
     },
   }
 };

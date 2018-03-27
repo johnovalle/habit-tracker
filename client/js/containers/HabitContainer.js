@@ -11,7 +11,7 @@ class HabitContainer extends React.Component {
 
   buildHabits(habits) {
     return habits.map((habit) => {
-      
+
       let habitEntries = this.props.entries.filter(entry => habit.id === entry.habitId);
       // console.log('selected', habit.id, this.props.selected, this.props.selected === habit.id)
       return (
@@ -27,7 +27,7 @@ class HabitContainer extends React.Component {
 
     });
   }
-  
+
   buildTrack(habitId, entries, range) {
     let track = [];
     let recentEntries = this.sortAndFilterEntries(entries, range);
@@ -37,13 +37,13 @@ class HabitContainer extends React.Component {
       d.setDate(d.getDate() - i);
       let status = 'unfilled';
       let entry;
-      if(recentEntries.length > 0 && sameDay(d, recentEntries[0].date)) {
+      if(recentEntries.length > 0 && sameDay(d, new Date(recentEntries[0].date))) {
         entry = recentEntries.shift();
         status = 'filled';
       }
       let statusClass = status + ' entry-block';
-      track.push(<HabitEntry key={d.toLocaleDateString('en-US')+habitId} 
-                              className={statusClass} 
+      track.push(<HabitEntry key={d.toLocaleDateString('en-US')+habitId}
+                              className={statusClass}
                               onClick={() => this.props.toggleEntry(habitId, d, entry)}/>);
     }
     return track.reverse();
@@ -51,7 +51,7 @@ class HabitContainer extends React.Component {
 
   sortAndFilterEntries(entries, range) {
     let d = new Date();
-    return entries.filter(entry => numDaysBetween(d, entry.date) < range).sort((a,b) => a.date < b.date);
+    return entries.filter(entry => numDaysBetween(d, new Date(entry.date)) < range).sort((a,b) => a.date < b.date);
   }
 
   render() {
