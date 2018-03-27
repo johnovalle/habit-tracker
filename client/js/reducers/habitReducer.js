@@ -17,8 +17,8 @@ const habitReducer = ((state = habitState, action) => {
 
     case EDIT_HABIT:
       let items = state.items.map(item => {
-          if(item.id === action.payload.id) {                
-              return Object.assign({}, item, action.payload); // {...item, ...action.playload};
+          if(item.id === action.payload.id) {
+              return Object.assign({}, item, action.payload); // {...item, ...action.payload};
           }
           return item;
       });
@@ -44,9 +44,9 @@ const habitReducer = ((state = habitState, action) => {
       action.payload = state.selected === action.payload ? null : action.payload;
       state = {...state, selected: action.payload};
       break;
-    
+
     case CHANGE_HABIT_GROUP:
-      let order = state.items.filter(item => item.groupId === action.payload.groupId).length; 
+      let order = state.items.filter(item => item.groupId === action.payload.groupId).length;
       sorted = orderAndMapHabits(state.items.map(item => {
         if (item.id === action.payload.habitId) {
           return {...item, groupId: action.payload.groupId, order};
@@ -72,9 +72,9 @@ const orderAndMapHabits = (items) => {
 
 const addToCollection = (state, {targetKey = 'groupId', targetId = null, title}) => {
   targetId = targetId ? parseInt(targetId) : targetId;
-  let order = state.items.filter(item => item[targetKey] === targetId).length; 
- 
-  let newItem = {id: state.tempId, title, [targetKey]: targetId, order}; 
+  let order = state.items.filter(item => item[targetKey] === targetId).length;
+
+  let newItem = {id: state.tempId, title, [targetKey]: targetId, order};
 
   return [...state.items, newItem];
 };
@@ -87,8 +87,8 @@ const changeHabitOrder = (state, {target, groupId, direction}) => {
   let swapped = false;
   let swapTarget;
 
-  if ((direction === -1 && currentLocation !== 0) || 
-      (direction === 1 && currentLocation !== groupOrder.length - 1)) { 
+  if ((direction === -1 && currentLocation !== 0) ||
+      (direction === 1 && currentLocation !== groupOrder.length - 1)) {
     swap = groupOrder[currentLocation + direction];
     swapped = true;
   }
@@ -111,8 +111,8 @@ const changeHabitOrder = (state, {target, groupId, direction}) => {
     });
 
     return newHabits;
-    
-  } 
+
+  }
   return false;
 };
 // move habit from group to group

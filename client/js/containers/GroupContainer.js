@@ -10,6 +10,11 @@ import {deleteEntry} from '../actions/entryActions';
 
 class GroupContainer extends React.Component {
 
+  constructor(props){
+    super(props);
+    this.addNewGroup = this.addNewGroup.bind(this);
+  }
+
   buildGroups(groups) {
     return groups.map((group) => {
 
@@ -26,7 +31,7 @@ class GroupContainer extends React.Component {
                     retitle={this.props.retitle}
                     delete={this.props.deleteGroup.bind(null, group, habits.map(habit => habit.id), entryIds)}
                     reorder={this.props.changeGroupOrder.bind(null, group)}
-                    selected={this.props.selected && this.props.selected === group.id}
+                    selected={group.selected}
                     select={this.props.select.bind(null, group.id)}>
           {/*this.buildHabits(habits)*/}
           <HabitContainer habitIds={habits.map(habit => habit.id)} groupId={group.id} entryIds={entryIds} />
@@ -35,12 +40,17 @@ class GroupContainer extends React.Component {
     });
   }
 
+  addNewGroup = (target, title) => {
+    let priority = this.props.groups.items.length;
+    this.props.addToCollection(title, priority);
+  }
+
   render() {
     return (<div>
       {this.buildGroups(this.props.groups.items)}
       <AddForm
           title='Add a new group'
-          action={this.props.addToCollection}
+          action={this.addNewGroup}
         />
       {/*<AddForm
           title='Add a new habit'
@@ -69,28 +79,29 @@ const mapDispatchToProps = (dispatch) => {
         dispatch(editHabit(payload));
       }
     },
-    addToCollection(targetId = null, title) {
+    addToCollection(title, priority) {
       // const payload = {targetId, title};
       axios.post('/api/group', {title}).then(response => {
-        response.data.targetId = targetId;
+        response.data.priority = priority;
         console.log(response);
         dispatch(addGroup(response.data));
-      })
+      });
 
     },
-    addToHabits(targetId = null, title) {
-      const payload = {targetId, title};
-      dispatch(addHabit(payload));
-    },
+    // addToHabits(targetId = null, title) {
+    //   const payload = {targetId, title};
+    //   dispatch(addHabit(payload));
+    // },
     changeGroupOrder(target, direction) {
       console.log('action prop', target, direction);
       dispatch(changeGroupOrder({target, direction}));
     },
     deleteGroup(group, habitIds, entryIds){
-
-      dispatch(deleteGroup({groupIds: [group.id]}));
-      dispatch(deleteHabit({habitIds}));
-      dispatch(deleteEntry({entryIds}));
+      axios.delete(`/api/group/${group.id}`).then(() => {
+        dispatch(deleteGroup({groupIds: [group.id]}));
+        dispatch(deleteHabit({habitIds}));
+        dispatch(deleteEntry({entryIds}));
+      });
     },
     select(groupId) {
       dispatch(selectGroup(groupId));

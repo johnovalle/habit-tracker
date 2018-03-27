@@ -1,5 +1,5 @@
 import {SET_GROUPS, ADD_GROUP, EDIT_GROUP, CHANGE_GROUP_ORDER, DELETE_GROUP, SELECT_GROUP} from '../actions/actionsTypes';
-const groupState = {items:[{id: null, title: 'Ungrouped', priority: -1}], selected: null};
+const groupState = {items:[{id: null, title: 'Ungrouped', priority: -1}]};
 // let tempId = 789;
 
 const groupReducer = ((state = groupState, action) => {
@@ -12,16 +12,13 @@ const groupReducer = ((state = groupState, action) => {
             break;
 
         case ADD_GROUP:
-            // console.log(action.payload);
-            // let group = {...action.payload};
-            // tempId++;
             state = {...state, items: [...state.items, action.payload]};
             break;
 
         case EDIT_GROUP:
             items = state.items.map(item => {
-                if(item.id === action.payload.id) {
-                    return Object.assign({}, item, action.payload); // {...item, ...action.playload};
+                if(item.id === action.payload.id) { // SEE IF THIS FIXES THIS LINE
+                    return Object.assign({}, item, action.payload); // {...item, ...action.payload};
                 }
                 return item;
             });
@@ -29,8 +26,17 @@ const groupReducer = ((state = groupState, action) => {
             break;
 
         case SELECT_GROUP:
-            action.payload = state.selected === action.payload ? null : action.payload;
-            state = {...state, selected: action.payload};
+            items = state.items.map(group => {
+              if(group.id === action.payload) {
+                return {...group, selected: !group.selected};
+              } else {
+                if (group.selected) {
+                  return {...group, selected: false};
+                }
+              }
+              return group;
+            });
+            state = {...state, items};
             break;
 
         case CHANGE_GROUP_ORDER:
