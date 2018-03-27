@@ -1,5 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import axios from 'axios';
 import Group from '../components/Group';
 import HabitContainer from './HabitContainer';
 import AddForm from './AddForm';
@@ -11,7 +12,7 @@ class GroupContainer extends React.Component {
 
   buildGroups(groups) {
     return groups.map((group) => {
-      
+
       let habits = this.props.habits.items.filter((habit) => habit.groupId === group.id);
       let entryIds = habits.reduce((acc, habit) => {
         let entries = this.props.entries.filter(entry => habit.id === entry.habitId)
@@ -20,9 +21,9 @@ class GroupContainer extends React.Component {
       }, []);
 
       return (
-        <Group key={group.id} 
-                    {...group} 
-                    retitle={this.props.retitle} 
+        <Group key={group.id}
+                    {...group}
+                    retitle={this.props.retitle}
                     delete={this.props.deleteGroup.bind(null, group, habits.map(habit => habit.id), entryIds)}
                     reorder={this.props.changeGroupOrder.bind(null, group)}
                     selected={this.props.selected && this.props.selected === group.id}
@@ -69,8 +70,13 @@ const mapDispatchToProps = (dispatch) => {
       }
     },
     addToCollection(targetId = null, title) {
-      const payload = {targetId, title};
-      dispatch(addGroup(payload));
+      // const payload = {targetId, title};
+      axios.post('/api/group', {title}).then(response => {
+        response.data.targetId = targetId;
+        console.log(response);
+        dispatch(addGroup(response.data));
+      })
+
     },
     addToHabits(targetId = null, title) {
       const payload = {targetId, title};

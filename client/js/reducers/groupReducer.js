@@ -1,6 +1,6 @@
 import {SET_GROUPS, ADD_GROUP, EDIT_GROUP, CHANGE_GROUP_ORDER, DELETE_GROUP, SELECT_GROUP} from '../actions/actionsTypes';
-const groupState = {items:[{id: null, title: 'Ungrouped', order: -1}], selected: null};
-let tempId = 789;
+const groupState = {items:[{id: null, title: 'Ungrouped', priority: -1}], selected: null};
+// let tempId = 789;
 
 const groupReducer = ((state = groupState, action) => {
   let items;
@@ -12,30 +12,31 @@ const groupReducer = ((state = groupState, action) => {
             break;
 
         case ADD_GROUP:
-            let group = {id: tempId, ...action.payload};
-            tempId++;
-            state = {...state, items: [...state.items, group]};
+            // console.log(action.payload);
+            // let group = {...action.payload};
+            // tempId++;
+            state = {...state, items: [...state.items, action.payload]};
             break;
 
         case EDIT_GROUP:
             items = state.items.map(item => {
-                if(item.id === action.payload.id) {                
+                if(item.id === action.payload.id) {
                     return Object.assign({}, item, action.payload); // {...item, ...action.playload};
                 }
                 return item;
             });
             state = {...state, items};
             break;
-        
+
         case SELECT_GROUP:
             action.payload = state.selected === action.payload ? null : action.payload;
             state = {...state, selected: action.payload};
             break;
-        
+
         case CHANGE_GROUP_ORDER:
             let reordered = changeOrder(state, action.payload);
             if (reordered) {
-              sorted = [...reordered].sort((a,b) => a.order - b.order);
+              sorted = [...reordered].sort((a,b) => a.priority - b.priority);
               state = {...state, items: [...sorted]};
             }
             break;
@@ -54,8 +55,8 @@ const changeOrder = (state, {target, direction}) => {
     let currentLocation = state.items.indexOf(target);
     let swap;
     let swapped = false;
-  
-    if ((direction === -1 && currentLocation !== 1) || 
+
+    if ((direction === -1 && currentLocation !== 1) ||
         (direction === 1 && currentLocation !== state.items.length - 1)) {
       swap = state.items[currentLocation + direction];
       swapped = true;
@@ -64,17 +65,17 @@ const changeOrder = (state, {target, direction}) => {
     if (swapped && swap.id) {
       let newGroups = state.items.map(group => {
         if (group.id === swap.id) {
-          return {...group, order: target.order };
+          return {...group, priority: target.priority };
         }
         if (group.id === target.id) {
-          return {...group, order: swap.order };
+          return {...group, priority: swap.priority };
         }
         return group;
       });
-  
+
       return newGroups;
-      
-    } 
+
+    }
     return false;
   };
 
