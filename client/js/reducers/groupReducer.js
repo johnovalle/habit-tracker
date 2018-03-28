@@ -7,7 +7,7 @@ const groupReducer = ((state = groupState, action) => {
   let sorted;
     switch (action.type) {
         case SET_GROUPS:
-            sorted = [...state.items, ...action.payload.groups].sort((a,b) => a.order - b.order);
+            sorted = [...state.items, ...action.payload.groups].sort((a,b) => a.priority - b.priority);
             state = {...state, items: [...sorted]};
             break;
 
@@ -40,11 +40,20 @@ const groupReducer = ((state = groupState, action) => {
             break;
 
         case CHANGE_GROUP_ORDER:
-            let reordered = changeOrder(state, action.payload);
-            if (reordered) {
-              sorted = [...reordered].sort((a,b) => a.priority - b.priority);
-              state = {...state, items: [...sorted]};
-            }
+            console.log('payload', action.payload.groups);
+            items = state.items.map(group => {
+              for(const alter of action.payload.groups) {
+                if(group.id === alter.id) {
+                  console.log('MATCH');
+                  return {...group, priority: alter.priority};
+                }
+              }
+              return group;
+            });
+
+
+            sorted = items.sort((a,b) => a.priority - b.priority);
+            state = {...state, items: [...sorted]};
             break;
 
         case DELETE_GROUP:
@@ -56,35 +65,5 @@ const groupReducer = ((state = groupState, action) => {
     }
     return state;
 });
-
-const changeOrder = (state, {target, direction}) => {
-    let currentLocation = state.items.indexOf(target);
-    let swap;
-    let swapped = false;
-
-    if ((direction === -1 && currentLocation !== 1) ||
-        (direction === 1 && currentLocation !== state.items.length - 1)) {
-      swap = state.items[currentLocation + direction];
-      swapped = true;
-    }
-
-    if (swapped && swap.id) {
-      let newGroups = state.items.map(group => {
-        if (group.id === swap.id) {
-          return {...group, priority: target.priority };
-        }
-        if (group.id === target.id) {
-          return {...group, priority: swap.priority };
-        }
-        return group;
-      });
-
-      return newGroups;
-
-    }
-    return false;
-  };
-
-
 
 export default groupReducer;

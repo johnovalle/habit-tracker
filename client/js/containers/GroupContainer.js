@@ -13,6 +13,7 @@ class GroupContainer extends React.Component {
   constructor(props){
     super(props);
     this.addNewGroup = this.addNewGroup.bind(this);
+    this.changeGroupOrder = this.changeGroupOrder.bind(this);
   }
 
   buildGroups(groups) {
@@ -30,7 +31,7 @@ class GroupContainer extends React.Component {
                     {...group}
                     retitle={this.props.retitle}
                     delete={this.props.deleteGroup.bind(null, group, habits.map(habit => habit.id), entryIds)}
-                    reorder={this.props.changeGroupOrder.bind(null, group)}
+                    reorder={this.changeGroupOrder.bind(null, group)}
                     selected={group.selected}
                     select={this.props.select.bind(null, group.id)}>
           {/*this.buildHabits(habits)*/}
@@ -44,6 +45,15 @@ class GroupContainer extends React.Component {
     let priority = this.props.groups.items.length;
     this.props.addToCollection(title, priority);
   }
+
+  changeGroupOrder = (target, direction) => {
+    let changedGroups = changeOrder(this.props.groups.items, target, direction);
+    console.log(changedGroups);
+    if(changedGroups) {
+      this.props.changeGroupOrder(changedGroups);
+    }
+
+  };
 
   render() {
     return (<div>
@@ -59,6 +69,34 @@ class GroupContainer extends React.Component {
       </div>)
   }
 }
+
+const changeOrder = (groups, target, direction) => {
+  let currentLocation = groups.indexOf(target);
+  let swap;
+  let swapped = false;
+
+  if ((direction === -1 && currentLocation !== 1) ||
+      (direction === 1 && currentLocation !== groups.length - 1)) {
+    swap = groups[currentLocation + direction];
+    swapped = true;
+  }
+
+  if (swapped && swap.id) {
+    let newGroups = groups.reduce((acc, group) => {
+      if (group.id === swap.id) {
+        acc.push({...group, priority: target.priority });
+      }
+      if (group.id === target.id) {
+        acc.push({...group, priority: swap.priority });
+      }
+      return acc;
+    }, []);
+
+    return newGroups;
+
+  }
+  return false;
+};
 
 const mapStateToProps = (state) => {
   return {
@@ -81,20 +119,21 @@ const mapDispatchToProps = (dispatch) => {
     },
     addToCollection(title, priority) {
       // const payload = {targetId, title};
-      axios.post('/api/group', {title}).then(response => {
+      axios.post('/api/group', {title, priority}).then(response => {
         response.data.priority = priority;
         console.log(response);
         dispatch(addGroup(response.data));
       });
 
     },
-    // addToHabits(targetId = null, title) {
-    //   const payload = {targetId, title};
-    //   dispatch(addHabit(payload));
-    // },
-    changeGroupOrder(target, direction) {
-      console.log('action prop', target, direction);
-      dispatch(changeGroupOrder({target, direction}));
+    changeGroupOrder(groups) {
+      console.log('action prop', groups);
+      axios.put('/api/group', {groups}).then((data) => {
+        // console.log(data);
+        dispatch(changeGroupOrder({groups}));
+      })
+      .catch(err => console.log(err));
+
     },
     deleteGroup(group, habitIds, entryIds){
       axios.delete(`/api/group/${group.id}`).then(() => {
