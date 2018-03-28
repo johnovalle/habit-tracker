@@ -34,8 +34,8 @@ router.put('/:id', (req, res) => {
 
 router.patch('/:id', (req, res) => {
   db('habit_group').where({id: req.params.id}).update(req.body).returning('*').then(data => {
-      res.send(data[0]);
-  });
+    res.send(data[0]);
+  }).catch(err => console.log(err));
 });
 
 router.put('/', (req, res) => {

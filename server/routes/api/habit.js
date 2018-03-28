@@ -50,6 +50,12 @@ router.put('/:id', (req, res) => {
   }
 });
 
+router.patch('/:id', (req, res) => {
+  db('habit').where({id: req.params.id}).update(req.body).returning('*').then(data => {
+    res.send(data[0]);
+  }).catch(err => console.log(err));
+});
+
 router.delete('/:id', (req, res) => {
   db('habit').where({id: req.params.id}).del().then(() => {
     res.status(200).send('habit deleted');

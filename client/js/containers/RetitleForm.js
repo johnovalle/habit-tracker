@@ -1,5 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import axios from 'axios';
 import {editHabit} from '../actions/habitActions';
 import {editGroup} from '../actions/groupActions';
 
@@ -45,15 +46,19 @@ const mapStateToProps = (state, ownProps) => {
   }
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = (dispatch, {type, id}) => {
   return {
     retitle(title) {
-      if (ownProps.type === 'habit') {
-        dispatch(editHabit({id: ownProps.id, title}));
-      } else if (ownProps.type === 'group') {
-        dispatch(editGroup({id: ownProps.id, title}));
-      }
-      
+      const route = `/api/${type}/${id}`;
+
+      axios.patch(route, {title}).then(({data}) => {
+        if (type === 'habit') {
+          dispatch(editHabit({id, title}));
+        } else if (type === 'group') {
+          dispatch(editGroup({id, title}));
+        }
+      })
+      .catch(err => console.log(err));
     },
   }
 };

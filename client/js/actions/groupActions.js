@@ -16,7 +16,6 @@ export const addGroup = (group) => {
 };
 
 export const editGroup = (group) => {
-    console.log('edit group action', group);
     return {
         type: EDIT_GROUP,
         payload: group

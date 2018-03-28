@@ -18,7 +18,7 @@ const habitReducer = ((state = habitState, action) => {
     case EDIT_HABIT:
       let items = state.items.map(item => {
           if(item.id === action.payload.id) {
-              return Object.assign({}, item, action.payload); // {...item, ...action.payload};
+              return { ...item, ...action.payload};
           }
           return item;
       });
@@ -61,7 +61,7 @@ const habitReducer = ((state = habitState, action) => {
 
 // move to utility later
 const orderAndMapHabits = (items) => {
-  let sorted = [...items].sort((a,b) => a.order - b.order);
+  let sorted = [...items].sort((a,b) => a.priority - b.priority);
   let habitOrderMap = {};
   sorted.forEach(habit => {
       habitOrderMap[habit.groupId] = habitOrderMap[habit.groupId] || [];
@@ -72,9 +72,9 @@ const orderAndMapHabits = (items) => {
 
 const addToCollection = (state, {targetKey = 'groupId', targetId = null, title}) => {
   targetId = targetId ? parseInt(targetId) : targetId;
-  let order = state.items.filter(item => item[targetKey] === targetId).length;
+  let priority = state.items.filter(item => item[targetKey] === targetId).length;
 
-  let newItem = {id: state.tempId, title, [targetKey]: targetId, order};
+  let newItem = {id: state.tempId, title, [targetKey]: targetId, priority};
 
   return [...state.items, newItem];
 };
@@ -102,10 +102,10 @@ const changeHabitOrder = (state, {target, groupId, direction}) => {
 
     let newHabits = state.items.map(habit => {
       if (habit.id === swap) {
-        return {...habit, order: target.order };
+        return {...habit, priority: target.priority };
       }
       if (habit.id === target.id) {
-        return {...habit, order: swapTarget.order };
+        return {...habit, priority: swapTarget.priority };
       }
       return habit;
     });

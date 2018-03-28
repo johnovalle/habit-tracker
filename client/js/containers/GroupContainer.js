@@ -29,7 +29,6 @@ class GroupContainer extends React.Component {
       return (
         <Group key={group.id}
                     {...group}
-                    retitle={this.props.retitle}
                     delete={this.props.deleteGroup.bind(null, group, habits.map(habit => habit.id), entryIds)}
                     reorder={this.changeGroupOrder.bind(null, group)}
                     selected={group.selected}
@@ -109,14 +108,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    retitle(type, id, title) {
-      const payload = {id, title};
-      if (type === 'groups') {
-        dispatch(editGroup(payload));
-      } else if (type === 'habits') {
-        dispatch(editHabit(payload));
-      }
-    },
     addToCollection(title, priority) {
       // const payload = {targetId, title};
       axios.post('/api/group', {title, priority}).then(response => {
