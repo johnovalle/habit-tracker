@@ -15,7 +15,7 @@ router.post('/', (req, res) => {
     habit_id: req.body.habitId,
     created_at: req.body.date,
   })
-  .returning('*')
+  .returning(normalize)
   .then(data => res.send(data[0]))
   .catch(err => res.send(err));
 });

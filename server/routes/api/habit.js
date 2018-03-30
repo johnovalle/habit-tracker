@@ -57,7 +57,6 @@ router.patch('/:id', (req, res) => {
 });
 
 router.put('/', (req, res) => {
-  console.log(req.body.habits);
   db.transaction(trx => {
     const queries = [];
     req.body.habits.forEach(habit => {

@@ -167,7 +167,7 @@ const mapDispatchToProps = (dispatch) => {
         })
 
       } else {
-        axios.delete('/api/entry', {entryIds: [entry.id]}).then(() => {
+        axios.delete(`/api/entry/${entry.id}`, {entryIds: [entry.id]}).then(() => {
           dispatch(deleteEntry({entryIds: [entry.id]}));
         })
 

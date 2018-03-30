@@ -1,6 +1,6 @@
 import {SET_ENTRIES, ADD_ENTRY, DELETE_ENTRY} from '../actions/actionsTypes';
 const entryState = [];
-let tempId = 77; // remove this once connected to backend
+//let tempId = 77; // remove this once connected to backend
 
 const entryReducer = ((state = entryState, action) => {
     switch (action.type) {
@@ -8,10 +8,7 @@ const entryReducer = ((state = entryState, action) => {
             state = [...action.payload];
             break;
         case ADD_ENTRY:
-            let entry = {id: tempId, ...action.payload};
-            tempId++;
-            console.log(tempId);
-            state = [...state, entry];
+            state = [...state, {...action.payload}];
             break;
         case DELETE_ENTRY:
             return state.filter(entry => {
