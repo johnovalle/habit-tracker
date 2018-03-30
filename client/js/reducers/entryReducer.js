@@ -1,6 +1,5 @@
 import {SET_ENTRIES, ADD_ENTRY, DELETE_ENTRY} from '../actions/actionsTypes';
 const entryState = [];
-//let tempId = 77; // remove this once connected to backend
 
 const entryReducer = ((state = entryState, action) => {
     switch (action.type) {

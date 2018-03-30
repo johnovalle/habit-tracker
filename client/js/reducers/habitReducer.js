@@ -52,10 +52,10 @@ const habitReducer = ((state = habitState, action) => {
       break;
 
     case CHANGE_HABIT_GROUP:
-      let order = state.items.filter(item => item.groupId === action.payload.groupId).length;
       sorted = orderAndMapHabits(state.items.map(item => {
-        if (item.id === action.payload.habitId) {
-          return {...item, groupId: action.payload.groupId, order};
+        const {groupId, habitId, priority} = action.payload;
+        if (item.id === habitId) {
+          return {...item, groupId, priority};
         }
         return item;
       }));

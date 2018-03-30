@@ -1,5 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import axios from 'axios';
 import {changeHabitGroup} from '../actions/habitActions';
 
 class ChangeGroupSelect extends React.Component {
@@ -20,8 +21,11 @@ class ChangeGroupSelect extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-
-    this.props.change(parseInt(this.state.value) || null);
+    let groupId = parseInt(this.state.value) || null;
+    //let priority = this.props.habits.filter(item => item.groupId === groupId);
+    let priority = Math.max(...this.props.habits.filter(habit => habit.groupId === groupId)
+                                                .map(habit => habit.priority), -1) + 1;
+    this.props.change(groupId, priority);
     this.setState({value: ''});
   }
 
@@ -34,7 +38,7 @@ class ChangeGroupSelect extends React.Component {
       }
       return <option key={group.id} value={group.id}>{group.title}</option>
     });
-    
+
     return (
       <form onSubmit={this.handleSubmit}>
         <label>
@@ -54,13 +58,17 @@ const mapStateToProps = (state, ownProps) => {
   return {
     groups: state.groups.items,
     groupId: ownProps.groupId,
+    habits: state.habits.items,
   }
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = (dispatch, {habitId}) => {
   return {
-    change(groupId) {
-      dispatch(changeHabitGroup({groupId, habitId: ownProps.habitId}));
+    change(groupId, priority) {
+      axios.patch(`/api/habit/${habitId}`, {group_id: groupId, priority}).then(response => { // back-end should handle this transformation
+        dispatch(changeHabitGroup({groupId, habitId, priority}));
+      })
+      .catch(err => console.log(err));
     },
   }
 };
