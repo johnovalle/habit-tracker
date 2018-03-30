@@ -40,19 +40,18 @@ class GroupContainer extends React.Component {
     });
   }
 
-  addNewGroup = (target, title) => {
+  addNewGroup(target, title) {
     let priority = this.props.groups.items.length;
     this.props.addToCollection(title, priority);
   }
 
-  changeGroupOrder = (target, direction) => {
+  changeGroupOrder(target, direction) {
     let changedGroups = changeOrder(this.props.groups.items, target, direction);
-    console.log(changedGroups);
+    // console.log(changedGroups);
     if(changedGroups) {
       this.props.changeGroupOrder(changedGroups);
     }
-
-  };
+  }
 
   render() {
     return (<div>
@@ -111,7 +110,7 @@ const mapDispatchToProps = (dispatch) => {
     addToCollection(title, priority) {
       // const payload = {targetId, title};
       axios.post('/api/group', {title, priority}).then(response => {
-        response.data.priority = priority;
+        response.data.priority = priority; //TODO necessary?
         console.log(response);
         dispatch(addGroup(response.data));
       });

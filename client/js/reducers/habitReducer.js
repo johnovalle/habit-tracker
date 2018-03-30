@@ -1,5 +1,5 @@
 import {SET_HABITS, ADD_HABIT, EDIT_HABIT, CHANGE_HABIT_ORDER, CHANGE_HABIT_GROUP, SELECT_HABIT, DELETE_HABIT} from '../actions/actionsTypes';
-const habitState = {map: {}, items: [], selected: null, tempId:44};
+const habitState = {map: {}, items: [], selected: null};
 
 const habitReducer = ((state = habitState, action) => {
   let sorted;
@@ -11,8 +11,8 @@ const habitReducer = ((state = habitState, action) => {
       break;
 
     case ADD_HABIT:
-      sorted = orderAndMapHabits(addToCollection(state, action.payload));
-      state = {...state, ...sorted, tempId: state.tempId + 1};
+      sorted = orderAndMapHabits([...state.items, action.payload]);
+      state = {...state, ...sorted};
       break;
 
     case EDIT_HABIT:
@@ -26,11 +26,17 @@ const habitReducer = ((state = habitState, action) => {
       break;
 
     case CHANGE_HABIT_ORDER:
-      let reordered = changeHabitOrder(state, action.payload);
-      if (reordered) {
-        sorted = orderAndMapHabits(reordered);
-        state = {...state, ...sorted};
-      }
+      items = state.items.map(habit => {
+        for(const alter of action.payload.habits) {
+          if(habit.id === alter.id) {
+            return {...habit, priority: alter.priority};
+          }
+        }
+        return habit;
+      });
+
+      sorted = orderAndMapHabits(items);
+      state = {...state, ...sorted};
       break;
 
     case DELETE_HABIT:
@@ -69,52 +75,5 @@ const orderAndMapHabits = (items) => {
   });
   return {items: sorted, map: habitOrderMap};
 };
-
-const addToCollection = (state, {targetKey = 'groupId', targetId = null, title}) => {
-  targetId = targetId ? parseInt(targetId) : targetId;
-  let priority = state.items.filter(item => item[targetKey] === targetId).length;
-
-  let newItem = {id: state.tempId, title, [targetKey]: targetId, priority};
-
-  return [...state.items, newItem];
-};
-
-// look for ways to reduce complexity of this function
-const changeHabitOrder = (state, {target, groupId, direction}) => {
-  let groupOrder = state.map[groupId];
-  let currentLocation = groupOrder.indexOf(target.id);
-  let swap;
-  let swapped = false;
-  let swapTarget;
-
-  if ((direction === -1 && currentLocation !== 0) ||
-      (direction === 1 && currentLocation !== groupOrder.length - 1)) {
-    swap = groupOrder[currentLocation + direction];
-    swapped = true;
-  }
-
-  if (swapped) {
-    for (let habit of state.items) {
-      if (habit.id === swap) {
-        swapTarget = habit;
-      }
-    }
-
-    let newHabits = state.items.map(habit => {
-      if (habit.id === swap) {
-        return {...habit, priority: target.priority };
-      }
-      if (habit.id === target.id) {
-        return {...habit, priority: swapTarget.priority };
-      }
-      return habit;
-    });
-
-    return newHabits;
-
-  }
-  return false;
-};
-// move habit from group to group
 
 export default habitReducer;

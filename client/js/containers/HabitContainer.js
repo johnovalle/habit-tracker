@@ -1,5 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import axios from 'axios';
+
 import Habit from '../components/Habit';
 import HabitEntry from '../components/HabitEntry';
 import AddForm from './AddForm';
@@ -8,6 +10,11 @@ import {addHabit, changeHabitOrder, selectHabit, deleteHabit} from '../actions/h
 import {deleteEntry, addEntry} from '../actions/entryActions';
 
 class HabitContainer extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.addToCollection = this.addToCollection.bind(this);
+  }
 
   buildHabits(habits) {
     return habits.map((habit) => {
@@ -18,7 +25,7 @@ class HabitContainer extends React.Component {
         <Habit key={habit.id}
                 {...habit}
                 delete={() => this.props.deleteHabit(habit.id, habitEntries.map(entry => entry.id))}
-                reorder={this.props.changeHabitOrder.bind(null, habit, habit.groupId)}
+                reorder={this.changeHabitOrder.bind(this, habit, habit.groupId)}
                 selected={this.props.selected === habit.id}
                 select={this.props.select.bind(null, habit.id)}>
           {this.buildTrack(habit.id, habitEntries, 31)}
@@ -49,9 +56,26 @@ class HabitContainer extends React.Component {
     return track.reverse();
   }
 
+  addToCollection(groupId, title) {
+
+    groupId = groupId ? parseInt(groupId) : groupId;
+    let priority = this.props.habits.filter(item => item.groupId === groupId).length;
+
+    let payload = {title, groupId, priority};
+
+    this.props.addToCollection(payload);
+  }
+
   sortAndFilterEntries(entries, range) {
     let d = new Date();
     return entries.filter(entry => numDaysBetween(d, new Date(entry.date)) < range).sort((a,b) => a.date < b.date);
+  }
+
+  changeHabitOrder(target, groupId, direction) {
+    let changedHabits = changeOrder(this.props.habits, this.props.map, target, groupId, direction);
+    if(changedHabits) {
+      this.props.changeHabitOrder(changedHabits);
+    }
   }
 
   render() {
@@ -60,11 +84,47 @@ class HabitContainer extends React.Component {
       <AddForm
           title='Add a new habit'
           targetId={this.props.groupId}
-          action={this.props.addToCollection}
+          action={this.addToCollection}
         />
       </div>)
   }
 }
+
+const changeOrder = (habits, map, target, groupId, direction) => {
+  let groupOrder = map[groupId];
+  let currentLocation = groupOrder.indexOf(target.id);
+  let swap;
+  let swapped = false;
+  let swapTarget;
+
+  if ((direction === -1 && currentLocation !== 0) ||
+      (direction === 1 && currentLocation !== groupOrder.length - 1)) {
+    swap = groupOrder[currentLocation + direction];
+    swapped = true;
+  }
+
+  if (swapped) {
+    for (let habit of habits) {
+      if (habit.id === swap) {
+        swapTarget = habit;
+      }
+    }
+
+    let newHabits = habits.reduce((acc, habit) => {
+      if (habit.id === swap) {
+        acc.push({...habit, priority: target.priority });
+      }
+      if (habit.id === target.id) {
+        acc.push({...habit, priority: swapTarget.priority });
+      }
+      return acc;
+    }, []);
+
+    return newHabits
+
+  }
+  return false;
+};
 
 const mapStateToProps = (state, ownProps) => {
   return {
@@ -72,27 +132,45 @@ const mapStateToProps = (state, ownProps) => {
     entries: state.entries,
     groupId: ownProps.groupId,
     selected: state.habits.selected,
-
+    map: state.habits.map,
   }
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addToCollection(targetId, title) {
-      dispatch(addHabit({targetId, title}));
+    addToCollection(payload) {
+      axios.post('/api/habit', payload)
+        .then(({data}) => {
+          dispatch(addHabit(data));
+        })
+        .catch(err => console.log(err));
+
     },
-    changeHabitOrder(target, groupId, direction) {
-      dispatch(changeHabitOrder({target, groupId, direction}));
+    changeHabitOrder(habits) {
+      axios.put('/api/habit', {habits}).then(() => {
+
+        dispatch(changeHabitOrder({habits}));
+      })
+      .catch(err => console.log(err));
     },
     deleteHabit(habitId, entryIds) {
-      dispatch(deleteHabit({habitIds: [habitId]}));
-      dispatch(deleteEntry({entryIds}));
+      axios.delete(`/api/habit/${habitId}`).then(() => {
+        dispatch(deleteHabit({habitIds: [habitId]}));
+        dispatch(deleteEntry({entryIds}));
+      })
+      .catch(err => console.log(err));
     },
     toggleEntry(habitId, date, entry) {
       if (!entry) {
-        dispatch(addEntry({habitId, date}));
+        axios.post('/api/entry', {habitId, date}).then(({data}) => {
+          dispatch(addEntry(data));
+        })
+
       } else {
-        dispatch(deleteEntry({entryIds: [entry.id]}));
+        axios.delete('/api/entry', {entryIds: [entry.id]}).then(() => {
+          dispatch(deleteEntry({entryIds: [entry.id]}));
+        })
+
       }
     },
     select(habitId) {
