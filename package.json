@@ -4,7 +4,8 @@
   "description": "Full-stack Node, SQL, React app for tracking habits",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server/index.js --exec babel-node"
+    "start": "nodemon server/index.js --exec babel-node",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,9 @@
     "body-parser": "^1.18.2",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
+    "jsonwebtoken": "^8.3.0",
     "knex": "^0.14.2",
+    "moment": "^2.22.2",
     "morgan": "^1.9.0",
     "pg": "^7.4.1",
     "react": "^16.2.0",
@@ -47,8 +50,9 @@
     "enzyme-adapter-react-16": "^1.1.1",
     "html-webpack-plugin": "^2.30.1",
     "jsdom": "9.11.0",
-    "mocha": "^4.1.0",
+    "mocha": "^5.2.0",
     "nodemon": "^1.14.6",
+    "should": "^13.2.1",
     "style-loader": "^0.19.1",
     "webpack": "^3.10.0",
     "webpack-dev-middleware": "^2.0.3"
